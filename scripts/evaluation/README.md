@@ -50,3 +50,10 @@ For it to run you need the experiments finished and their output copied next to 
 └── requirements.txt
 ```
 
+## Important
+
+This evaluation is based on and for data from the Commit `2022-autumn-submission [3be8d0e]`! 
+While most of things have not changed since then, there is one change; the "transformers" were a string only, 
+which has been later changed to be proper json. 
+So, what you have at the tag is also valid json but the field is one big string instead of a list of objects.
+For updates on this matter see [this issue](https://github.com/ciselab/Guided-MT-Code2Vec/issues/21).
