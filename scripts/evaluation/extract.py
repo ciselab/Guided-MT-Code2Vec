@@ -66,7 +66,7 @@ def make_df(path_to_data_dir: str) -> pd.DataFrame:
 def extract_seed_from_path(path: str) -> int:
     pattern = r'seed-\d+'
     match = re.findall(pattern, path)[0]
-    return match[5:]
+    return int(match[5:])
 
 
 def extract_experiment_from_path(directory: str, path: str) -> str:
@@ -78,7 +78,7 @@ def extract_experiment_from_path(directory: str, path: str) -> str:
 def extract_generation_from_path(path: str) -> int:
     pattern = r'gen\d+'
     match = re.findall(pattern, path)[0]
-    return match[3:]
+    return int(match[3:])
 
 
 def count_transformers(datapoint):
