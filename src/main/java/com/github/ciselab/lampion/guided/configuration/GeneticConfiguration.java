@@ -13,6 +13,8 @@ public class GeneticConfiguration {
     private int popSize = 10;
     private int tournamentSize = 4;
 
+    private boolean tournamentPutBack = false;
+
     private int maxSteadyGenerations = 35;
 
 
@@ -146,5 +148,19 @@ public class GeneticConfiguration {
             throw new IllegalArgumentException("GrowthFactor cannot be smaller than 1");
         }
         this.growthFactor = growthFactor;
+    }
+
+    /**
+     * Whether or not Elements can be drawn twice from the population.
+     * True  = Yes, can be drawn multiple times
+     * False = Every Element can be atmost once in a single tournament
+     * @return
+     */
+    public boolean doTournamentPutBack() {
+        return tournamentPutBack;
+    }
+
+    public void setTournamentPutBack(boolean tournamentPutBack) {
+        this.tournamentPutBack = tournamentPutBack;
     }
 }

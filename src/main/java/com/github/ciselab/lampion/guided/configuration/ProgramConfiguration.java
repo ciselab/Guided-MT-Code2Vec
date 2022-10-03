@@ -20,7 +20,7 @@ public class ProgramConfiguration {
 
     private Path directoryPath = Path.of(System.getProperty("user.dir"));
     private Path dataPath = Path.of(directoryPath.toString(),"/code2vec/data/");
-    private Path bashPath = Path.of("C:/Program Files/Git/bin/bash.exe");
+    private Path bashPath = Path.of("/bin/bash");
 
     private Path basePath = Path.of(System.getProperty("user.dir"));
     private Path code2vecDirectory = Path.of(directoryPath.toString(),"code2vec");

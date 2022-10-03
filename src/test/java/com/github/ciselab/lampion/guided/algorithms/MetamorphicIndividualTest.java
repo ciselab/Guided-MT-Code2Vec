@@ -5,9 +5,12 @@ import com.github.ciselab.lampion.core.transformations.transformers.BaseTransfor
 import com.github.ciselab.lampion.core.transformations.transformers.IfTrueTransformer;
 import com.github.ciselab.lampion.guided.algorithms.MetamorphicIndividual;
 import com.github.ciselab.lampion.guided.configuration.Configuration;
+import com.github.ciselab.lampion.guided.helpers.StubMetric;
+import com.github.ciselab.lampion.guided.metric.Metric;
 import com.github.ciselab.lampion.guided.support.GenotypeSupport;
 import com.github.ciselab.lampion.guided.support.MetricCache;
 
+import java.util.HashMap;
 import java.util.Random;
 import java.util.random.RandomGenerator;
 
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static com.github.ciselab.lampion.guided.helpers.Utils.makeEmptyCache;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MetamorphicIndividualTest {
@@ -183,6 +187,31 @@ public class MetamorphicIndividualTest {
         assertNotNull(testObject.getGene(1));
         assertEquals(b,testObject.getGene(1));
     }
+
+    @Tag("Integration")
+    @ParameterizedTest
+    @ValueSource(doubles = {0.0,0.25,0.5,0.75,1.0})
+    public void testFetchFitness_FitnessWasStoredInCache_shouldBeCalculatedCorrectly(double fitness){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,3);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+        cache.addMetric(stub);
+
+        HashMap<Metric,Double> aMetrics = new HashMap<>();
+        aMetrics.put(stub,fitness);
+        cache.putMetricResults(a,aMetrics);
+
+        var result = a.getFitness();
+        assertEquals(fitness,result);
+    }
+
 
     /* ===================================================
             Equality and HashCode Tests
@@ -470,13 +499,4 @@ public class MetamorphicIndividualTest {
         assertTrue(a.hexHash().startsWith("00"));
     }
 
-    /**
-     * @return A Cache without any active metrics, will not call file system for any evaluation
-     */
-    private static MetricCache makeEmptyCache(){
-        MetricCache cache = new MetricCache();
-        cache.getMetrics().removeIf(x -> true);
-        cache.getActiveMetrics().removeIf(x -> true);
-        return cache;
-    }
 }
