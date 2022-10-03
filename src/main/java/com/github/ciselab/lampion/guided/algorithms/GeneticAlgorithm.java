@@ -1,7 +1,6 @@
 package com.github.ciselab.lampion.guided.algorithms;
 
 import com.github.ciselab.lampion.guided.configuration.GeneticConfiguration;
-import com.github.ciselab.lampion.guided.program.Main;
 import com.github.ciselab.lampion.guided.support.GenotypeSupport;
 import com.github.ciselab.lampion.guided.support.MetricCache;
 import com.github.ciselab.lampion.guided.support.ParetoFront;
@@ -60,7 +59,7 @@ public class GeneticAlgorithm {
         while (index < newPopulation.size()) {
             MetamorphicIndividual individual1 = tournamentSelection(pop, randomGenerator).get();
             MetamorphicIndividual individual2 = tournamentSelection(pop, randomGenerator).get();
-            List<MetamorphicIndividual> newIndividuals = crossover(individual1, individual2);
+            List<MetamorphicIndividual> newIndividuals = crossover(individual1, individual2,randomGenerator);
             // Set parents for new individuals
             for(MetamorphicIndividual individual: newIndividuals) {
                 individual.setParents(individual1, individual2);
@@ -119,27 +118,40 @@ public class GeneticAlgorithm {
      * @param individual2 the second metamorphic individual.
      * @return the new metamorphic individual.
      */
-    private List<MetamorphicIndividual> crossover(MetamorphicIndividual individual1, MetamorphicIndividual individual2) {
-        logger.debug("Performing crossover");
-        MetamorphicIndividual firstIndividual = new MetamorphicIndividual(genotypeSupport, currentGeneration);
-        MetamorphicIndividual secondIndividual = new MetamorphicIndividual(genotypeSupport, currentGeneration);
-        List<MetamorphicIndividual> individualList = new ArrayList<>();
-        // Loop through genes
+    List<MetamorphicIndividual> crossover(MetamorphicIndividual individual1, MetamorphicIndividual individual2, RandomGenerator r) {
+        logger.trace("Performing crossover between " + individual1.hexHash() + " and " + individual2.hexHash());
+        MetamorphicIndividual firstChild = new MetamorphicIndividual(genotypeSupport, currentGeneration);
+        MetamorphicIndividual secondChild = new MetamorphicIndividual(genotypeSupport, currentGeneration);
+        List<MetamorphicIndividual> offsprings = new ArrayList<>();
+
+        // Build First Child
         for (int i = 0; i < individual1.getLength(); i++) {
-            // Crossover
-            if (Math.random() <= config.getCrossoverRate()) {
-                firstIndividual.addGene(individual1.getGene(i));
-                if (i < individual2.getLength())
-                    secondIndividual.addGene(individual2.getGene(i));
+            // We pick a gene from first individual if
+            // A) second Individual is too short
+            // B) We don't want to crossover here (based on chance)
+            if (r.nextDouble() < config.getCrossoverRate()
+                && i< individual2.getLength())
+            {
+                firstChild.addGene(individual2.getGene(i));
             } else {
-                if (i < individual2.getLength())
-                    firstIndividual.addGene(individual2.getGene(i));
-                secondIndividual.addGene(individual1.getGene(i));
+                firstChild.addGene(individual1.getGene(i));
             }
         }
-        individualList.add(firstIndividual);
-        individualList.add(secondIndividual);
-        return individualList;
+
+        // Build First Child
+        for (int i = 0; i < individual2.getLength(); i++) {
+            // See above, mirror behaviour
+            if (r.nextDouble() < config.getCrossoverRate()
+                    && i < individual1.getLength()) {
+                secondChild.addGene(individual1.getGene(i));
+            } else {
+                secondChild.addGene(individual2.getGene(i));
+            }
+        }
+
+        offsprings.add(firstChild);
+        offsprings.add(secondChild);
+        return offsprings;
     }
 
     /**

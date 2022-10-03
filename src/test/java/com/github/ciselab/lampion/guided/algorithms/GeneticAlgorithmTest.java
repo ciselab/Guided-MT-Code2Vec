@@ -184,4 +184,227 @@ public class GeneticAlgorithmTest {
         assertTrue(anyAboveGrowthRate);
     }
 
+    @Test
+    public void testCrossover_twoEmptyGenes_returnsTwoEmptyGenes(){
+        // This Test mostly checks if there is an exception thrown
+        // Which it should not!
+        var r = new SplittableRandom(10);
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+
+        var results = ga.crossover(a,b,r);
+
+        assertEquals(2,results.size());
+        results.forEach(i -> assertEquals(a,i));
+        results.forEach(i -> assertEquals(b,i));
+    }
+
+
+    @Test
+    public void testCrossover_twoFilledGenes_returnsTwoUnseenGenes(){
+        // This Test mostly checks if there is an exception thrown
+        // Which it should not!
+        var r = new SplittableRandom(10);
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,10);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,10);
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+
+        var results = ga.crossover(a,b,r);
+
+        assertEquals(2,results.size());
+
+        var c = results.get(0);
+        var d = results.get(1);
+
+        // C different:
+        assertFalse(c.equals(a) || c.equals(b));
+        // D different:
+        assertFalse(d.equals(a) || d.equals(b));
+    }
+
+    @Test
+    public void testCrossover_oneGeneEmpty_returnsIdenticalGeneAndOneEmpty(){
+        // There is no crossover possible here, gene stays the same
+        var r = new SplittableRandom(10);
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,10);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+
+        var results = ga.crossover(a,b,r);
+
+        assertEquals(2,results.size());
+
+        var c = results.get(0);
+        var d = results.get(1);
+
+        assertEquals(a,c);
+        assertEquals(b,d);
+    }
+
+    @Test
+    public void testCrossover_twoFilledGenes_returnsGenesAreNotEmpty(){
+        // This Test mostly checks if there is an exception thrown
+        // Which it should not!
+        var r = new SplittableRandom(10);
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,10);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,10);
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+
+        var results = ga.crossover(a,b,r);
+
+        assertEquals(2,results.size());
+
+        var c = results.get(0);
+        var d = results.get(1);
+
+        assertNotEquals(0,c.getLength());
+        assertNotEquals(0,d.getLength());
+    }
+
+
+    @Test
+    public void testCrossover_twoFilledGenes_withDifferentSize_sizeOfChildrenSame(){
+        var r = new SplittableRandom(10);
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        int aSize = 10;
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,aSize);
+        int bSize = 20;
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,bSize);
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+
+        var results = ga.crossover(a,b,r);
+
+        assertEquals(2,results.size());
+
+        var c = results.get(0);
+        var d = results.get(1);
+
+        assertEquals(aSize,c.getLength());
+        assertEquals(bSize,d.getLength());
+    }
+
+    @Tag("Regression")
+    @RepeatedTest(5)
+    public void testCrossover_twoFilledGenes_withDifferentSize_sizeOfChildrenSame_VariantB(){
+        // Variant A has A>B
+        // Variant B has B>A
+        var r = new SplittableRandom();
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        int aSize = 20;
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,aSize);
+        int bSize = 5;
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,bSize);
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+
+        var results = ga.crossover(a,b,r);
+
+        assertEquals(2,results.size());
+
+        var c = results.get(0);
+        var d = results.get(1);
+
+        assertEquals(aSize,c.getLength());
+        assertEquals(bSize,d.getLength());
+    }
+
+
+    @Test
+    public void testCrossover_whenSeeded_differentSeeds_isDeterministic(){
+        var r = new SplittableRandom(10);
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        int aSize = 20;
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,aSize);
+        int bSize = 5;
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,bSize);
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+
+        var gen1 = new SplittableRandom(55);
+        var gen2 = new SplittableRandom(100);
+        var results1 = ga.crossover(a,b,gen1);
+        var results2 = ga.crossover(a,b,gen2);
+
+        var c1 = results1.get(0);
+        var d1 = results1.get(1);
+        var c2 = results2.get(0);
+        var d2 = results2.get(1);
+
+        assertNotEquals(c1,c2);
+        assertNotEquals(d1,d2);
+    }
+
+    @Test
+    public void testCrossover_whenSeeded_isDeterministic(){
+        var r = new SplittableRandom(10);
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        int aSize = 20;
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,aSize);
+        int bSize = 5;
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,bSize);
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+
+        var gen1 = new SplittableRandom(55);
+        var gen2 = new SplittableRandom(55);
+        var results1 = ga.crossover(a,b,gen1);
+        var results2 = ga.crossover(a,b,gen2);
+
+        var c1 = results1.get(0);
+        var d1 = results1.get(1);
+        var c2 = results2.get(0);
+        var d2 = results2.get(1);
+
+        assertEquals(c1,c2);
+        assertEquals(d1,d2);
+    }
+
+
 }
