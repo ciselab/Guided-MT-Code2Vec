@@ -77,14 +77,24 @@ public class MetamorphicPopulation {
 
     /**
      * Get the fittest metamorphic individual of the metamorphic population.
+     * Important: Fitness 1 is considered the "best".
      * @return the fittest metamorphic individual.
      */
     public Optional<MetamorphicIndividual> getFittest() {
-        return individuals.stream()
-                // Note: The - is necessary to sort in the right order
-                // This does not change the actual value, it is just used for this temporary sorting
-                .sorted(Comparator.comparingDouble((MetamorphicIndividual x) -> - x.getFitness()))
-                .findFirst();
+        Optional<MetamorphicIndividual> fittest = individuals.stream().findFirst();
+        // Exit Early in case of empty individuals
+        if (fittest.isEmpty())
+            return Optional.empty();
+
+        for (MetamorphicIndividual individual : individuals){
+            // Case 1: The Individual is fitter - set it as new fittest
+            fittest = individual.getFitness() > fittest.get().getFitness() ? Optional.of(individual) : fittest;
+            // Case 2: They are same fit, but one is shorter - pick shorter
+            if (fittest.get().getFitness() == individual.getFitness())
+                fittest = individual.getLength() < fittest.get().getLength() ? Optional.of(individual) : fittest;
+            // Case 3: Fittest is fittest - do nothing
+        }
+        return fittest;
     }
 
     /**

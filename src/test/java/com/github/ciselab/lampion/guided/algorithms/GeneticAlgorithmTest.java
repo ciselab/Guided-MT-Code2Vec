@@ -2,6 +2,8 @@ package com.github.ciselab.lampion.guided.algorithms;
 
 import com.github.ciselab.lampion.guided.algorithms.GeneticAlgorithm;
 import com.github.ciselab.lampion.guided.configuration.Configuration;
+import com.github.ciselab.lampion.guided.helpers.StubMetric;
+import com.github.ciselab.lampion.guided.metric.Metric;
 import com.github.ciselab.lampion.guided.support.GenotypeSupport;
 import com.github.ciselab.lampion.guided.support.MetricCache;
 import com.github.ciselab.lampion.guided.support.ParetoFront;
@@ -11,9 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.HashMap;
+import java.util.Random;
 import java.util.SplittableRandom;
 import java.util.stream.IntStream;
 
+import static com.github.ciselab.lampion.guided.helpers.Utils.makeEmptyCache;
+import static com.github.ciselab.lampion.guided.helpers.Utils.storeIndividualForCaching;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -408,5 +414,267 @@ public class GeneticAlgorithmTest {
         assertEquals(d1,d2);
     }
 
+    @Tag("Integration")
+    @Test
+    public void testTournamentSelection_OneElement_OneTournament_shouldReturnElement(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
 
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,3);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.9);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(1,r,false,support,0);
+        testPopulation.saveIndividual(a);
+
+        config.genetic.setTournamentSize(1);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        var result = ga.tournamentSelection(testPopulation,r);
+
+        assertTrue(result.isPresent());
+        assertEquals(a,result.get());
+    }
+
+    @Tag("Integration")
+    @Test
+    public void testTournamentSelection_TwoElement_OneTournament_shouldReturnFittest(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,3);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,4);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.9);
+        storeIndividualForCaching(b,cache,stub,0.5);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(1,r,false,support,0);
+        testPopulation.saveIndividual(a);
+        testPopulation.saveIndividual(b);
+
+        config.genetic.setTournamentSize(1);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        var result = ga.tournamentSelection(testPopulation,r);
+
+        assertTrue(result.isPresent());
+        assertEquals(a,result.get());
+    }
+
+    @Tag("Integration")
+    @Test
+    public void testTournamentSelection_ThreeElements_ThreeTournamentSize_shouldReturnFittest(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,3);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,4);
+        MetamorphicIndividual c = new MetamorphicIndividual(support,0);
+        c.populateIndividual(r,4);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.9);
+        storeIndividualForCaching(b,cache,stub,0.5);
+        storeIndividualForCaching(c,cache,stub,0.4);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(1,r,false,support,0);
+        testPopulation.saveIndividual(a);
+        testPopulation.saveIndividual(b);
+        testPopulation.saveIndividual(c);
+
+        config.genetic.setTournamentSize(3);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        var result = ga.tournamentSelection(testPopulation,r);
+
+        assertTrue(result.isPresent());
+        assertEquals(a,result.get());
+    }
+
+    @Tag("Integration")
+    @Test
+    public void testTournamentSelection_ThreeElements_OneElementIsShorterAtSameFitness_shouldReturnShorter(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,8);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,3);
+        MetamorphicIndividual c = new MetamorphicIndividual(support,0);
+        c.populateIndividual(r,5);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.8);
+        storeIndividualForCaching(b,cache,stub,0.9);
+        storeIndividualForCaching(c,cache,stub,0.4);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(3,r,false,support,0);
+        testPopulation.saveIndividual(a);
+        testPopulation.saveIndividual(b);
+        testPopulation.saveIndividual(c);
+
+        config.genetic.setTournamentSize(10);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        var result = ga.tournamentSelection(testPopulation,r);
+
+        assertTrue(result.isPresent());
+        assertEquals(b,result.get());
+    }
+
+    @Tag("Integration")
+    @Test
+    public void testTournamentSelection_TwoElements_OneElementIsShorterAtSameFitness_shouldReturnShorter(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,8);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,3);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.9);
+        storeIndividualForCaching(b,cache,stub,0.9);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(2,r,false,support,0);
+        testPopulation.saveIndividual(a);
+        testPopulation.saveIndividual(b);
+
+        config.genetic.setTournamentSize(5);
+        config.genetic.setTournamentPutBack(false);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        var result = ga.tournamentSelection(testPopulation,r);
+
+        assertTrue(result.isPresent());
+        assertEquals(b,result.get());
+    }
+
+
+    @Tag("Integration")
+    @Test
+    public void testTournamentSelection_MoreTournamentSizeThanElements_ShouldBeOk(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,5);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,3);
+        MetamorphicIndividual c = new MetamorphicIndividual(support,0);
+        c.populateIndividual(r,4);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.9);
+        storeIndividualForCaching(b,cache,stub,0.6);
+        storeIndividualForCaching(c,cache,stub,0.4);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(3,r,false,support,0);
+        testPopulation.saveIndividual(a);
+        testPopulation.saveIndividual(b);
+        testPopulation.saveIndividual(c);
+
+        config.genetic.setTournamentSize(20);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        var result = ga.tournamentSelection(testPopulation,r);
+
+        assertTrue(result.isPresent());
+        assertEquals(a,result.get());
+    }
+
+    @Tag("Integration")
+    @Test
+    public void testTournamentSelection_MoreTournamentSizeThanElements_ShouldBeOk_withNoPutback(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,5);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,3);
+        MetamorphicIndividual c = new MetamorphicIndividual(support,0);
+        c.populateIndividual(r,4);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.9);
+        storeIndividualForCaching(b,cache,stub,0.6);
+        storeIndividualForCaching(c,cache,stub,0.4);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(3,r,false,support,0);
+        testPopulation.saveIndividual(a);
+        testPopulation.saveIndividual(b);
+        testPopulation.saveIndividual(c);
+
+        config.genetic.setTournamentSize(3);
+        config.genetic.setTournamentPutBack(false);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        var result = ga.tournamentSelection(testPopulation,r);
+
+        assertTrue(result.isPresent());
+        assertEquals(a,result.get());
+    }
+
+    @Test
+    public void testTournamentSelection_EmptyPopulation_ShouldBeEmpty(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(1,r,false,support,0);
+
+        config.genetic.setTournamentSize(10);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        var result = ga.tournamentSelection(testPopulation,r);
+
+        assertTrue(result.isEmpty());
+    }
 }

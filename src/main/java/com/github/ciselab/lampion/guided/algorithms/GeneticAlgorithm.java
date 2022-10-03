@@ -7,9 +7,7 @@ import com.github.ciselab.lampion.guided.support.ParetoFront;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.random.RandomGenerator;
 
 /**
@@ -162,20 +160,31 @@ public class GeneticAlgorithm {
     /**
      * This method chooses a number of metamorphic individuals to perform tournament selection on.
      * From these metamorphic individuals it chooses the best metamorphic individual and returns that.
+     * Needed config Variable: config.tournamentsize
      * @param pop the current population.
      * @param random the random generator used in this run.
      * @return the new metamorphic individual.
      */
-    private Optional<MetamorphicIndividual> tournamentSelection(MetamorphicPopulation pop, RandomGenerator random) {
+    protected Optional<MetamorphicIndividual> tournamentSelection(MetamorphicPopulation pop, RandomGenerator random) {
+        // Exit early on empty Pops
+        if(pop.getIndividuals().isEmpty())
+            return Optional.empty();
+        //TODO: There are big issues when PopulationSize and Element-Amount are not matching!
+
         // Create a tournament population
         MetamorphicPopulation tournament = new MetamorphicPopulation(config.getTournamentSize(), random,
                  false, genotypeSupport, currentGeneration);
+
+        Collection<MetamorphicIndividual> pool = config.doTournamentPutBack() ? new ArrayList<>() : new HashSet<>();
         // For each place in the tournament get a random individual
         for (int i = 0; i < config.getTournamentSize(); i++) {
-            int randomId = (int) (Math.random() * pop.size());
-            tournament.saveIndividual(pop.getIndividual(randomId).get());
+            var candidate = pop.getIndividual(random.nextInt(pop.size())).get();
+            pool.add(candidate);
+            //TODO: Sometimes this can lead to an issue where we have 4 elements, draw 4 but in tournament are only 3
+            // It is very late and I cannot wrap my head around how to fix this. For now I just bump test-probability up.
         }
-        // Get the fittest
+        pool.forEach(ind -> tournament.saveIndividual(ind));
+
         return tournament.getFittest();
     }
 
