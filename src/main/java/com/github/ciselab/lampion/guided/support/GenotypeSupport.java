@@ -197,14 +197,12 @@ public class GenotypeSupport {
         String data = datasetArray[datasetArray.length-1];
         String preprocess = "source preprocess.sh " + path.toAbsolutePath() + " " + data;
         bashRunner.runCommand(preprocess);
-        logger.debug("Preprocessing command: " + preprocess);
 
         if(!dataset.contains("initialDataset")) {
             // move preprocessed files to correct folder
             String move = "mv  "
                     + config.program.getDataDirectoryPath().toAbsolutePath() + "/" + data + "/* "
                     + dataset + "/";
-            logger.debug("Move command: " + move);
             bashRunner.runCommand(move);
             String del = "rmdir " + config.program.getDataDirectoryPath() + "/" + data;
             bashRunner.runCommand(del);
@@ -213,7 +211,6 @@ public class GenotypeSupport {
         // Evaluating code2vec model with preprocessed files.
         Path testDataPath = Path.of(dataset + "/" + data + ".test.c2v");
         String eval = "python3 code2vec.py --load " + config.program.getModelPath() + " --test " + testDataPath + " --logs-path eval_log.txt";
-        logger.debug("Eval command: " + eval);
         bashRunner.runCommand(eval);
         // The evaluation writes to the result.txt file
 
