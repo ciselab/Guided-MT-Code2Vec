@@ -69,7 +69,7 @@ public class Main {
 
             config.program.setModelPath(args[1]);
             FileManagement.copyDirectory(args[2],
-                    Path.of(config.program.getDataDirectoryPath().toAbsolutePath().toString() , genotypeSupport.getInitialDataset()).toString());
+                    Path.of(config.program.getDataDirectoryPath().toAbsolutePath().toString() , genotypeSupport.getInitialDataset(), "test").toString());
             config.program.setCode2vecDirectory(
                     Path.of(config.program.getBasePath().toAbsolutePath().toString(),"/code2vec/").toString()
             );
@@ -106,7 +106,7 @@ public class Main {
                 myPop.saveIndividual(newIndiv);
             }
             MetamorphicIndividual initial = new MetamorphicIndividual(genotypeSupport, -1);
-            initial.setJavaPath(config.program.getDirectoryPath().toString());
+            initial.setJavaPath(Path.of(config.program.getDataDirectoryPath().toString(), genotypeSupport.getInitialDataset()).toString());
             writeInitialPopulationResults(resultWriter, myPop, initial);
 
             ArrayList<Double> fitnesses = new ArrayList<>();
@@ -179,7 +179,7 @@ public class Main {
             MetamorphicPopulation myPop =
                     new MetamorphicPopulation(config.genetic.getPopSize(), random, true, genotypeSupport, 0);
             MetamorphicIndividual best = new MetamorphicIndividual(genotypeSupport, -1);
-            best.setJavaPath(config.program.getDirectoryPath().toString());
+            best.setJavaPath(Path.of(config.program.getDataDirectoryPath().toString(), genotypeSupport.getInitialDataset()).toString());
             double bestFitness = writeInitialPopulationResults(resultWriter, myPop, best);
             //if(dataPointSpecific)
             //    writeDataSpecificResults(resultWriter, best);

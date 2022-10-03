@@ -353,12 +353,12 @@ public class MetamorphicIndividual {
             if (jsonIndividual.isEmpty())
                 return;
         } else {
-            if (resultPath.isPresent()) { // Should be able to do this with the javaPath
+            if (!resultPath.isPresent()) // Should be able to do this with the javaPath
+                    this.inferMetrics();
                 jsonPath = Optional.of(resultPath.get() + ".json");
 
                 //Write JSON file
                 jsonIndividual = createNewJSON();
-            }
         }
         try (FileWriter file = new FileWriter(jsonPath.get())) {
             //We can write any JSONArray or JSONObject instance to the file

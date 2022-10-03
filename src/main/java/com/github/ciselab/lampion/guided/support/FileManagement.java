@@ -58,10 +58,10 @@ public class FileManagement {
             throws IOException {
         logger.debug("Copying " + sourceDirectoryLocation + " to " + destinationDirectoryLocation);
         //String path = Path.of(sourceDirectoryLocation).toAbsolutePath().toString();
-        File dir = new File(sourceDirectoryLocation);
+        File dir = new File(destinationDirectoryLocation);
         if(!dir.exists()) {
             if(dir.mkdirs())
-                logger.debug("Created directory ("+sourceDirectoryLocation+")necessary for the data.");
+                logger.debug("Created directory ("+destinationDirectoryLocation+")necessary for the data.");
         }
 
         Files.walk(Paths.get(sourceDirectoryLocation))
