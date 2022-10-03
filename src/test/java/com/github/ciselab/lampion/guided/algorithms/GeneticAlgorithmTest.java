@@ -206,6 +206,8 @@ public class GeneticAlgorithmTest {
     }
 
 
+    @Tag("Probabilistic")
+    @Tag("Seeded")
     @Test
     public void testCrossover_twoFilledGenes_returnsTwoUnseenGenes(){
         // This Test mostly checks if there is an exception thrown

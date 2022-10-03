@@ -114,6 +114,11 @@ public class GeneticAlgorithm {
 
     /**
      * Crossover two metamorphic individuals.
+     * Our crossover checks for geneA at any position if we want to pick the corresponding geneB if possible.
+     * The same is done for GeneB.
+     * The output genes will have the same length as the input genes.
+     * Used configuration variables: "CrossoverRate"
+     * Note: If Gene A is 10 long and gene B is 20, then crossover can only happen in the first 10 genes for B.
      * @param individual1 the first metamorphic individual.
      * @param individual2 the second metamorphic individual.
      * @return the new metamorphic individual.
