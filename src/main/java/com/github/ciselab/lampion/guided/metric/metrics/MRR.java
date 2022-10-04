@@ -24,6 +24,7 @@ public class MRR extends Metric {
         List<String> predictions = readPredictions(path  + File.separator + EXPECTEDFILE);
         var scores = new ArrayList<>();
         float score = 0;
+        int correctSize = predictions.size();
         for(int i = 0; i < predictions.size(); i++) {
             String current = predictions.get(i);
             if(current.contains("No results for predicting:")) {
@@ -33,12 +34,14 @@ public class MRR extends Metric {
                 double rank = Integer.parseInt(current.split("rank: ")[1].split(",")[0]);
                 score += (1/rank);
                 scores.add((float) (1/rank));
-            } else {
+            } else if(current.contains("Original: ")) {
                 score += 1;
                 scores.add(1f);
+            } else {
+                correctSize--;
             }
         }
-        return score/predictions.size();
+        return score/correctSize;
     }
 
     @Override

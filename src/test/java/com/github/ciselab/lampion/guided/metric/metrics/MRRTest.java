@@ -44,6 +44,24 @@ public class MRRTest {
         assertTrue(result>=0  && result <=1);
     }
 
+    @Tag("File")
+    @Test
+    public void testMRRScore_PathIsOk_shouldGiveKnownCorrectValue(){
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        MRR metric = new MRR();
+
+        MetamorphicIndividual testObject = new MetamorphicIndividual(support, 0);
+        testObject.setResultPath("./src/test/resources/known_metric_files");
+
+        var result = metric.apply(testObject);
+
+        assertNotNull(result);
+        assertNotEquals(Double.NaN,result);
+        assertEquals(result, 0.5);
+    }
+
     @Test
     public void testMRR_PathIsBad_NaNValue(){
         var config = new Configuration();

@@ -22,20 +22,23 @@ public class PercentageMRR extends Metric {
         if(!path.contains("results"))
             path = path + File.separator + "results";
         List<String> predictions = readPredictions(path  + File.separator + EXPECTEDFILE);
-       var  scores = new ArrayList<>();
+        var  scores = new ArrayList<>();
         double score = 0;
+        int size = 0;
         for(int i = 0; i < predictions.size(); i++) {
             String current = predictions.get(i);
             if(current.contains("No results for predicting:")) {
                 score += 0;
                 scores.add(0f);
+                size++;
             } else if(current.contains("score: ")) {
                 double rank = Double.parseDouble(current.split("score: ")[1]);
                 score += (rank/100);
                 scores.add((float) (rank/100));
+                size++;
             }
         }
-        return score/predictions.size();
+        return score/size;
     }
 
 
