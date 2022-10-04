@@ -624,7 +624,7 @@ public class GeneticAlgorithmTest {
 
     @Tag("Integration")
     @Test
-    public void testTournamentSelection_MoreTournamentSizeThanElements_ShouldBeOk_withNoPutback(){
+    public void testTournamentSelection_shouldBeDeterministic(){
         Random r = new Random(5);
         var config = new Configuration();
         MetricCache cache = makeEmptyCache();
@@ -658,6 +658,45 @@ public class GeneticAlgorithmTest {
 
         assertTrue(result.isPresent());
         assertEquals(a,result.get());
+    }
+
+    @Tag("Integration")
+    @Test
+    public void testTournamentSelection_MoreTournamentSizeThanElements_ShouldBeOk_withNoPutback(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,5);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,3);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.9);
+        storeIndividualForCaching(b,cache,stub,0.6);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(3,r,false,support,0);
+        testPopulation.saveIndividual(a);
+        testPopulation.saveIndividual(b);
+
+        config.genetic.setTournamentSize(1);
+        config.genetic.setTournamentPutBack(false);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        Random random1 = new Random(10);
+        Random random2 = new Random(10);
+
+        var result1 = ga.tournamentSelection(testPopulation,random1);
+        var result2 = ga.tournamentSelection(testPopulation,random2);
+
+        assertTrue(result1.isPresent());
+        assertTrue(result2.isPresent());
+        assertEquals(result1.get(),result2.get());
     }
 
     @Test

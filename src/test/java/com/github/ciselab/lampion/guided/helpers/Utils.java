@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class Utils {
 
     public static void storeIndividualForCaching(MetamorphicIndividual ind, MetricCache cache, StubMetric m, Double value){
-        m.valuesToReturn.put(ind,0.9);
+        m.valuesToReturn.put(ind,value);
         HashMap<Metric,Double> aMetrics = new HashMap<>();
         aMetrics.put(m,value);
         cache.putMetricResults(ind,aMetrics);
