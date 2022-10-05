@@ -61,8 +61,8 @@ public class MetamorphicIndividual {
      * Populate the current metamorphic individual.
      * The key and seed are randomly generated according to the maximum transformer value and the random generator.
      *
-     * @param randomGenerator     the random generator used for this run.
-     * @param length              the length.
+     * @param randomGenerator the random generator used for this run.
+     * @param length          the length.
      */
     public void populateIndividual(RandomGenerator randomGenerator, int length) {
         transformers.clear();
@@ -300,12 +300,13 @@ public class MetamorphicIndividual {
      * @return The global fitness.
      */
     private double inferFitness() {
-        var results =  new HashMap<Metric,Double>();
-        for (Metric m : metricCache.getActiveMetrics()){
-            results.put(m,m.apply(this));
-        };
+        var results = new HashMap<Metric, Double>();
+        for (Metric m : metricCache.getActiveMetrics()) {
+            results.put(m, m.apply(this));
+        }
+        ;
 
-        metricCache.putMetricResults(this,results);
+        metricCache.putMetricResults(this, results);
 
         return calculateFitness(results);
     }
@@ -318,19 +319,19 @@ public class MetamorphicIndividual {
      */
     private Optional<Double> fetchFitness() {
         var cached = metricCache.getMetricResults(this);
-        if (cached.isPresent()){
-            Map<Metric,Double> cachedResults = cached.get();
+        if (cached.isPresent()) {
+            Map<Metric, Double> cachedResults = cached.get();
             return Optional.of(calculateFitness(cachedResults));
         } else
             return Optional.empty();
     }
 
 
-    private double calculateFitness(Map<Metric,Double> entries){
+    private double calculateFitness(Map<Metric, Double> entries) {
         Double fitness = 0.0;
-        for (Map.Entry<Metric,Double> entry : entries.entrySet()){
+        for (Map.Entry<Metric, Double> entry : entries.entrySet()) {
             boolean isActiveMetric = metricCache.getActiveMetrics().contains(entry.getKey());
-            if(!entry.getKey().canBeBiggerThanOne() && isActiveMetric){
+            if (!entry.getKey().canBeBiggerThanOne() && isActiveMetric) {
                 // If the Weight is negative, we are trying to maximize:
                 // We "flip" the value to 1-value (Turns 0 to 1, and 1 to 0)
                 var value = entry.getKey().getWeight() < 0 ? 1 - entry.getValue() : entry.getValue();
@@ -354,11 +355,11 @@ public class MetamorphicIndividual {
                 return;
         } else {
             if (!resultPath.isPresent()) // Should be able to do this with the javaPath
-                    this.inferMetrics();
-                jsonPath = Optional.of(resultPath.get() + ".json");
+                this.inferMetrics();
+            jsonPath = Optional.of(resultPath.get() + ".json");
 
-                //Write JSON file
-                jsonIndividual = createNewJSON();
+            //Write JSON file
+            jsonIndividual = createNewJSON();
         }
         try (FileWriter file = new FileWriter(jsonPath.get())) {
             //We can write any JSONArray or JSONObject instance to the file
@@ -469,15 +470,16 @@ public class MetamorphicIndividual {
     /**
      * Calculates the hashCode and returns it as Hexadezimal String.
      * Note: This also handles "Error-Cases" if the Hashes Hex is smaller than 0.
+     *
      * @return The HashCode as Hexadezimal, cut to 6 Digits
      */
     public String hexHash() {
         final int DEFAULT_LENGTH = 6;
         String base = Integer.toHexString(this.hashCode());
-        if (base.length()>=DEFAULT_LENGTH){
-            return base.substring(0,DEFAULT_LENGTH);
+        if (base.length() >= DEFAULT_LENGTH) {
+            return base.substring(0, DEFAULT_LENGTH);
         } else {
-            return "0".repeat(DEFAULT_LENGTH-base.length()) + base;
+            return "0".repeat(DEFAULT_LENGTH - base.length()) + base;
         }
     }
 
@@ -495,8 +497,8 @@ public class MetamorphicIndividual {
         // Step by Step Comparison of Transformers
         // Note: Comparing Hashes is not "allowed",
         // as equals needs to be different from hashCode for some of Javas Fall-Back Logic on HashCollision
-        for (int i = 0; i < this.getLength(); i++){
-            if(!this.getGene(i).equals(sO.getGene(i))){
+        for (int i = 0; i < this.getLength(); i++) {
+            if (!this.getGene(i).equals(sO.getGene(i))) {
                 return false;
             }
         }

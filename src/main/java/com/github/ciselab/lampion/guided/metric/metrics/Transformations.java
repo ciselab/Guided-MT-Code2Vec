@@ -26,7 +26,7 @@ public class Transformations extends Metric {
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -37,7 +37,7 @@ public class Transformations extends Metric {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return new HashCodeBuilder().append(name).append(weight).hashCode();
     }
 }

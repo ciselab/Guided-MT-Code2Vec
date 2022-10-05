@@ -23,7 +23,7 @@ public class GeneticConfiguration {
     }
 
     public void setCrossoverRate(double crossoverRate) {
-        if(crossoverRate <= 0 || crossoverRate>1){
+        if (crossoverRate <= 0 || crossoverRate > 1) {
             throw new IllegalArgumentException("Crossover-Rate must be between 0 and 1");
         }
         this.crossoverRate = crossoverRate;
@@ -32,6 +32,7 @@ public class GeneticConfiguration {
     /**
      * Determines the chance how likely it is for an individual to mutate.
      * Value is between 0 and 1.
+     *
      * @return the mutation rate, between 0 and 1
      */
     public double getMutationRate() {
@@ -39,7 +40,7 @@ public class GeneticConfiguration {
     }
 
     public void setMutationRate(double mutationRate) {
-        if(mutationRate <= 0 || mutationRate>1){
+        if (mutationRate <= 0 || mutationRate > 1) {
             throw new IllegalArgumentException("Mutation-Rate must be between 0 and 1");
         }
         this.mutationRate = mutationRate;
@@ -50,7 +51,7 @@ public class GeneticConfiguration {
     }
 
     public void setElitismRate(double elitismRate) {
-        if(elitismRate <= 0 || elitismRate>1){
+        if (elitismRate <= 0 || elitismRate > 1) {
             throw new IllegalArgumentException("Elitism-Rate must be between 0 and 1");
         }
         this.elitismRate = elitismRate;
@@ -59,6 +60,7 @@ public class GeneticConfiguration {
     /**
      * How likely are mutations to create more transformers?
      * Value is between 0 and 1.
+     *
      * @return chance of a mutation to grow the genotype
      */
     public double getIncreaseSizeRate() {
@@ -66,7 +68,7 @@ public class GeneticConfiguration {
     }
 
     public void setIncreaseSizeRate(double increaseSizeRate) {
-        if(increaseSizeRate <= 0 || increaseSizeRate>1){
+        if (increaseSizeRate <= 0 || increaseSizeRate > 1) {
             throw new IllegalArgumentException("Increase-Rate must be between 0 and 1");
         }
         this.increaseSizeRate = increaseSizeRate;
@@ -76,6 +78,7 @@ public class GeneticConfiguration {
      * The maximum gene length.
      * Value is bigger than 1.
      * In case of a reached maximum gene-length, mutation will default to shrink.
+     *
      * @return Maximum Number of Transformers per Gene.
      */
     public int getMaxGeneLength() {
@@ -83,7 +86,7 @@ public class GeneticConfiguration {
     }
 
     public void setMaxGeneLength(int maxGeneLength) {
-        if(maxGeneLength<=0){
+        if (maxGeneLength <= 0) {
             throw new IllegalArgumentException("Gene Length must be bigger than 0");
         }
         this.maxGeneLength = maxGeneLength;
@@ -92,6 +95,7 @@ public class GeneticConfiguration {
     /**
      * How many individuals are in on population?
      * Value > 1
+     *
      * @return number of individuals in one population.
      */
     public int getPopSize() {
@@ -99,7 +103,7 @@ public class GeneticConfiguration {
     }
 
     public void setPopSize(int popSize) {
-        if(popSize<=0){
+        if (popSize <= 0) {
             throw new IllegalArgumentException("Populationsize must be bigger than 0");
         }
         this.popSize = popSize;
@@ -110,7 +114,7 @@ public class GeneticConfiguration {
     }
 
     public void setTournamentSize(int tournamentSize) {
-        if(tournamentSize<=0){
+        if (tournamentSize <= 0) {
             throw new IllegalArgumentException("TournamentSize must be bigger than 0");
         }
         this.tournamentSize = tournamentSize;
@@ -120,6 +124,7 @@ public class GeneticConfiguration {
      * Returns the allowed maximum steady generations of an experiment.
      * A generation is consider steady if the fitness does not improve.
      * Program first checks against steady generations, before the general used time is checked.
+     *
      * @return the number of generations that must be steady until program terminates.
      */
     public int getMaxSteadyGenerations() {
@@ -127,7 +132,7 @@ public class GeneticConfiguration {
     }
 
     public void setMaxSteadyGenerations(int maxSteadyGenerations) {
-        if(maxSteadyGenerations<1){
+        if (maxSteadyGenerations < 1) {
             throw new IllegalArgumentException("Steady Generations must be bigger or equals to 1");
         }
         this.maxSteadyGenerations = maxSteadyGenerations;
@@ -137,6 +142,7 @@ public class GeneticConfiguration {
      * This variable configures how many transformers are added on mutation.
      * Note: This leads to a distribution, i.E. a growth factor of 3 does not always add 3 elements,
      * but it adds 3 on average.
+     *
      * @return the average increase per mutation.
      */
     public double getGrowthFactor() {
@@ -144,7 +150,7 @@ public class GeneticConfiguration {
     }
 
     public void setGrowthFactor(double growthFactor) {
-        if (growthFactor < 1){
+        if (growthFactor < 1) {
             throw new IllegalArgumentException("GrowthFactor cannot be smaller than 1");
         }
         this.growthFactor = growthFactor;
@@ -154,6 +160,7 @@ public class GeneticConfiguration {
      * Whether or not Elements can be drawn twice from the population.
      * True  = Yes, can be drawn multiple times
      * False = Every Element can be atmost once in a single tournament
+     *
      * @return
      */
     public boolean doTournamentPutBack() {

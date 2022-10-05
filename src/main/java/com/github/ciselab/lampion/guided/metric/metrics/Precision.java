@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.List;
 
 public class Precision extends Metric {
-    private static final String EXPECTEDFILE =  "F1_score_log.txt";
+    private static final String EXPECTEDFILE = "F1_score_log.txt";
 
     public Precision() {
         this.name = Name.PREC;
@@ -20,12 +20,12 @@ public class Precision extends Metric {
     }
 
     private double calculateScore(String path) {
-        if(!path.contains("results"))
+        if (!path.contains("results"))
             path = path + File.separator + "results";
-        List<String> lines = readPredictions(path  + File.separator + EXPECTEDFILE);
+        List<String> lines = readPredictions(path + File.separator + EXPECTEDFILE);
         Double score = Double.NaN;
-        for(String i: lines) {
-            if(i.contains("precision")) {
+        for (String i : lines) {
+            if (i.contains("precision")) {
                 score = Double.parseDouble(i.split("precision: ")[1].split(",")[0]);
             }
         }
@@ -34,11 +34,11 @@ public class Precision extends Metric {
 
     @Override
     public Double apply(MetamorphicIndividual individual) {
-        double score =  individual.getResultPath()
+        double score = individual.getResultPath()
                 .map(i -> calculateScore(i))
                 .orElse(0.0);
-        if(!objective)
-            return 1-score;
+        if (!objective)
+            return 1 - score;
         else
             return score;
     }
@@ -49,7 +49,7 @@ public class Precision extends Metric {
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -60,7 +60,7 @@ public class Precision extends Metric {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return new HashCodeBuilder().append(name).append(weight).hashCode();
     }
 }

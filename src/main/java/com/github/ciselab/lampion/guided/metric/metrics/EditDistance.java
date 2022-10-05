@@ -11,33 +11,35 @@ import java.util.List;
 public class EditDistance extends Metric {
 
     private static final String EXPECTEDFILE = "predicted_words.txt";
-    public EditDistance(){
+
+    public EditDistance() {
         this.name = Name.EDITDIST;
     }
 
     private double calculateScore(String path) {
-        if(!path.contains("results"))
+        if (!path.contains("results"))
             path = path + File.separator + "results";
-        List<String> lines = readPredictions(path  + File.separator + EXPECTEDFILE);
+        List<String> lines = readPredictions(path + File.separator + EXPECTEDFILE);
         var scores = new ArrayList<>();
         float score = 0;
-        for(String i: lines) {
-            if(i.contains("Original") && i.contains("predicted")) {
+        for (String i : lines) {
+            if (i.contains("Original") && i.contains("predicted")) {
                 String[] t = i.split(", ");
                 String original = t[0].split(": ")[1];
                 String predicted = t[1].split(": ")[1];
-                float distance = 1/(editDistance(original, predicted)+1);
+                float distance = 1 / (editDistance(original, predicted) + 1);
                 score += distance; // when the editdistance is larger the resulting score will be lower.
                 scores.add(distance);
             }
         }
-        return score/lines.size();
+        return score / lines.size();
     }
 
     /**
      * Calculate the edit distance between two strings.
      * Code gotten from: https://www.programcreek.com/2013/12/edit-distance-in-java/
-     * @param original the original word.
+     *
+     * @param original  the original word.
      * @param predicted the predicted word.
      * @return the edit distance.
      */
@@ -85,17 +87,17 @@ public class EditDistance extends Metric {
 
     @Override
     public Double apply(MetamorphicIndividual individual) {
-        double score =  individual.getResultPath()
+        double score = individual.getResultPath()
                 .map(i -> calculateScore(i))
                 .orElse(0.0);
-        if(!objective)
-            return 1-score;
+        if (!objective)
+            return 1 - score;
         else
             return score;
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -106,7 +108,7 @@ public class EditDistance extends Metric {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return new HashCodeBuilder().append(name).append(weight).hashCode();
     }
 

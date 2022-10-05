@@ -42,6 +42,7 @@ public class Engine {
         perClassEach,      // "X Transformations per Class"
         perMethodEach      // "X Transformations per Method"
     }
+
     long numberOfTransformationsPerScope = 100;
     com.github.ciselab.lampion.core.program.Engine.TransformationScope scope = com.github.ciselab.lampion.core.program.Engine.TransformationScope.global;
 
@@ -56,7 +57,7 @@ public class Engine {
 
     private boolean writeJavaOutput = true; // This switch enables/disables pretty printing of altered java files
 
-    public Engine(String codeDirectory, String outputDirectory, TransformerRegistry registry){
+    public Engine(String codeDirectory, String outputDirectory, TransformerRegistry registry) {
         // Sanity Checks
         if (codeDirectory == null || codeDirectory.isEmpty() || codeDirectory.isBlank()) {
             throw new UnsupportedOperationException("Code Directory cannot be null or empty");
@@ -64,7 +65,7 @@ public class Engine {
         if (outputDirectory == null || outputDirectory.isEmpty() || outputDirectory.isBlank()) {
             throw new UnsupportedOperationException("Output Directory cannot be null or empty");
         }
-        if (registry == null ) {
+        if (registry == null) {
             throw new UnsupportedOperationException("Registry cannot be null");
         }
         if (registry.getRegisteredTransformers().size() == 0) {
@@ -76,8 +77,8 @@ public class Engine {
         this.registry = registry;
     }
 
-    public EngineResult run(CtModel codeRoot){
-        logger.info("Starting Engine with Registry " + registry.name + "["+registry.getRegisteredTransformers().size()
+    public EngineResult run(CtModel codeRoot) {
+        logger.info("Starting Engine with Registry " + registry.name + "[" + registry.getRegisteredTransformers().size()
                 + " transformers] reading from " + codeDirectory + " writing to " + outputDirectory);
 
         Instant startOfEngine = Instant.now();
@@ -93,8 +94,8 @@ public class Engine {
         methods = codeRoot.getElements(c -> c instanceof CtMethod);
 
         logger.debug("Found " + classes.size() + " Classes and "
-                + codeRoot.getElements(f -> f instanceof CtMethod).size() + " methods at " + codeDirectory );
-        if(classes.size() == 0 || methods.size() == 0) {
+                + codeRoot.getElements(f -> f instanceof CtMethod).size() + " methods at " + codeDirectory);
+        if (classes.size() == 0 || methods.size() == 0) {
             logger.error("Either found no classes or no methods - exiting early. " +
                     "Check your configuration, whether it points to actual files.");
             return builder.build();
@@ -107,11 +108,15 @@ public class Engine {
         // set the total number of transformations regarding the scope
         long totalTransformationsToDo = switch (scope) {
             case global -> numberOfTransformationsPerScope;
-            case perMethod -> numberOfTransformationsPerScope * codeRoot.filterChildren(c -> c instanceof CtMethod).list().size();
-            case perClass -> numberOfTransformationsPerScope * codeRoot.filterChildren(c -> c instanceof CtClass).list().size();
-            case perMethodEach -> numberOfTransformationsPerScope * codeRoot.filterChildren(c -> c instanceof CtMethod).list().size();
-            case perClassEach -> numberOfTransformationsPerScope * codeRoot.filterChildren(c -> c instanceof CtClass).list().size();
-            default ->  0;
+            case perMethod ->
+                    numberOfTransformationsPerScope * codeRoot.filterChildren(c -> c instanceof CtMethod).list().size();
+            case perClass ->
+                    numberOfTransformationsPerScope * codeRoot.filterChildren(c -> c instanceof CtClass).list().size();
+            case perMethodEach ->
+                    numberOfTransformationsPerScope * codeRoot.filterChildren(c -> c instanceof CtMethod).list().size();
+            case perClassEach ->
+                    numberOfTransformationsPerScope * codeRoot.filterChildren(c -> c instanceof CtClass).list().size();
+            default -> 0;
         };
         logger.info("Applying " + totalTransformationsToDo + " Transformations evenly distributed amongst all classes");
 
@@ -131,18 +136,18 @@ public class Engine {
                 TransformationResult result = transformer.applyAtRandom(toAlter);
                 results.add(result);
 
-                if (result != null && ! result.equals(new EmptyTransformationResult())){
+                if (result != null && !result.equals(new EmptyTransformationResult())) {
                     // As we removed the Manifest (for now?) we just log a debug statement of what was done
                     logger.debug("Successfully applied " + result.getTransformationName() +
                             " to Element(Hash):" + result.getTransformedElement().toString().hashCode());
-                } else if(result != null && result.equals(new EmptyTransformationResult())) {
+                } else if (result != null && result.equals(new EmptyTransformationResult())) {
                     logger.debug(transformer + " was not successfully applied.");
                 }
-                if(currentTransformer < registry.getRegisteredTransformers().size()-1)
+                if (currentTransformer < registry.getRegisteredTransformers().size() - 1)
                     currentTransformer++;
                 else
                     currentTransformer = 0;
-            } catch (SpoonException | NullPointerException spoonException){
+            } catch (SpoonException | NullPointerException spoonException) {
                 transformationFailures++;
             }
         }
@@ -152,8 +157,8 @@ public class Engine {
 
         Instant endOfTransformations = Instant.now();
         logger.info("Applying the Transformations took "
-                + Duration.between(startOfEngine,endOfTransformations) + " seconds");
-        if (results.stream().filter(u -> u.equals(new EmptyTransformationResult())).count()>0) {
+                + Duration.between(startOfEngine, endOfTransformations) + " seconds");
+        if (results.stream().filter(u -> u.equals(new EmptyTransformationResult())).count() > 0) {
             logger.info("Of the " + results.size() + " Transformations applied, "
                     + results.stream().filter(u -> u.equals(new EmptyTransformationResult())).count() + " where malformed");
             logger.info(transformationFailures + " transformations produced (Spoon-)errors");
@@ -166,13 +171,13 @@ public class Engine {
             // But it is not the comment-remover's fault, this would have to be fixed somewhere else
             commentRemover.setTryingToCompile(false);
             try {
-                for (var c : classes){
+                for (var c : classes) {
                     TransformationResult removeCommentResult = commentRemover.applyAtRandom(c);
                     results.add(removeCommentResult);
                     logger.info("Removed all Comments from the Java Output files");
                 }
             } catch (SpoonException spoonException) {
-                logger.error("Received a SpoonException while removing comments",spoonException);
+                logger.error("Received a SpoonException while removing comments", spoonException);
             }
         }
         classes.forEach(c -> c.updateAllParentsBelow());
@@ -186,6 +191,7 @@ public class Engine {
 
     /**
      * Getter for the code Directory field.
+     *
      * @return the code directory.
      */
     public String getCodeDirectory() {
@@ -196,7 +202,7 @@ public class Engine {
      * Looks in the initially found classes/methods for the next specified element according to specified scope.
      * Classes and Methods are returned in a order dependent from structure of the program,
      * but are always in the same order (for multiple iterations).
-     *
+     * <p>
      * Heavily relies on object-level index counters and methods. If there are issues, look there first.
      * The object-level indices are also handled in this method.
      *
@@ -206,20 +212,25 @@ public class Engine {
         CtElement toAlter = null;
         switch (scope) {
             // For these, just pick random classes and methods
-            case global,perMethod,perClass : toAlter = classes.get(random.nextInt(classes.size())); break;
+            case global, perMethod, perClass:
+                toAlter = classes.get(random.nextInt(classes.size()));
+                break;
             case perMethodEach: {
                 // Pick next method
                 toAlter = methods.get(methodIndex);
                 // Move or reset methodIndex
-                methodIndex = methodIndex < methods.size()-1 ? methodIndex + 1 : 0;
-            } break;
+                methodIndex = methodIndex < methods.size() - 1 ? methodIndex + 1 : 0;
+            }
+            break;
             case perClassEach: {
                 // Pick (specific) next class
                 toAlter = classes.get(classIndex);
                 // Move or reset classIndex
-                classIndex = classIndex < classes.size()-1 ? classIndex + 1 : 0;
-            } break;
-            default: logger.error("Found unknown/unhandled Scope in Engine");
+                classIndex = classIndex < classes.size() - 1 ? classIndex + 1 : 0;
+            }
+            break;
+            default:
+                logger.error("Found unknown/unhandled Scope in Engine");
         }
         return toAlter;
     }
@@ -229,7 +240,7 @@ public class Engine {
      * They are multiplied with the item under alternation, example:
      * The system has 2 classes, scope classes and transformations 100 -> 200 Transformations in total.
      * The system has 10 methods, scope method, and transformations 10 -> 100 Transformations in total.
-     *
+     * <p>
      * The transformations are (currently) applied evenly among all items, so setting the scope to
      * "perMethod" does not mean that every method is altered 10 times,
      * but in average there will be 10 alternations per method.
@@ -238,7 +249,7 @@ public class Engine {
      * @param scope
      * @throws UnsupportedOperationException for negative number of transformations
      */
-    public void setNumberOfTransformationsPerScope(long transformations, com.github.ciselab.lampion.core.program.Engine.TransformationScope scope){
+    public void setNumberOfTransformationsPerScope(long transformations, com.github.ciselab.lampion.core.program.Engine.TransformationScope scope) {
         if (transformations < 0) {
             throw new UnsupportedOperationException("Number of transformations cannot be negative");
         } else if (transformations == 0) {
@@ -252,17 +263,19 @@ public class Engine {
     /**
      * Whether to write to the output folder or not.
      * All other logic is still applied as usual.
-     *
+     * <p>
      * This is mostly intended to make tests easier without the need for file cleanup.
+     *
      * @param val true if you want to write output, false otherwise.
      */
-    public void setWriteJavaOutput(boolean val){
+    public void setWriteJavaOutput(boolean val) {
         writeJavaOutput = val;
     }
 
     /**
      * This method sets whether all comments are removed or not.
      * The comments are still entities in the AST, but are not in the toString() or prettyprinting.
+     *
      * @param val whether or not to remove all comments in all files - true for removal, false for keeping
      */
     public void setRemoveAllComments(boolean val) {
@@ -273,9 +286,10 @@ public class Engine {
      * Sets the random number provider to using a certain seed.
      * Used for testing and repeatable experiments.
      * The default seed at initialization is the seed provided in App
+     *
      * @param seed
      */
-    public void setRandomSeed(long seed){
+    public void setRandomSeed(long seed) {
         this.random = new Random(seed);
     }
 }

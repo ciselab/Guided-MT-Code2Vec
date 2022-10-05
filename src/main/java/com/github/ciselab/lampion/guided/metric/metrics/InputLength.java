@@ -12,7 +12,7 @@ public class InputLength extends Metric {
 
     private String dataset;
 
-    public InputLength(){
+    public InputLength() {
         this.name = Name.INPUTLENGTH;
     }
 
@@ -23,7 +23,7 @@ public class InputLength extends Metric {
 
     private double calculateScore(String path) {
         var scores = new ArrayList<>();
-        if(dataset != null) {
+        if (dataset != null) {
             // should read all files not the dataset...
             int count = 0;
             try {
@@ -34,7 +34,7 @@ public class InputLength extends Metric {
                     scores.add((float) lines.size());
                 }
                 return count;
-            } catch(NullPointerException e) {
+            } catch (NullPointerException e) {
                 logger.debug("Couldn't get files input length set to 0.");
             }
         }
@@ -58,7 +58,7 @@ public class InputLength extends Metric {
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -69,7 +69,7 @@ public class InputLength extends Metric {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return new HashCodeBuilder().append(name).append(weight).hashCode();
     }
 }

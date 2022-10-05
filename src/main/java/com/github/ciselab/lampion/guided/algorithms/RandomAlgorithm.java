@@ -25,7 +25,7 @@ public class RandomAlgorithm {
         logger.debug("Initialize parameters for the random algorithm");
         maxTransformerValue = maxValue;
         this.randomGenerator = randomGenerator;
-        return String.format(Locale.UK,"{max transformer value: %d}", maxValue);
+        return String.format(Locale.UK, "{max transformer value: %d}", maxValue);
     }
 
     public RandomAlgorithm(GenotypeSupport gen, ParetoFront paretoFront) {
@@ -40,17 +40,17 @@ public class RandomAlgorithm {
         currentGeneration += 1;
         logger.debug("Creating a new population of length " + newLength + " through the random algorithm.");
         MetamorphicPopulation newPop =
-                new MetamorphicPopulation(pop.size(), randomGenerator,true,genotypeSupport,currentGeneration);
-        for(int i = 0; i < pop.size(); i++) {
+                new MetamorphicPopulation(pop.size(), randomGenerator, true, genotypeSupport, currentGeneration);
+        for (int i = 0; i < pop.size(); i++) {
             MetamorphicIndividual newIndiv = new MetamorphicIndividual(genotypeSupport, currentGeneration);
             newIndiv.populateIndividual(randomGenerator, newLength);
             newPop.saveIndividual(newIndiv);
         }
 
         // Check if fitness is already known, otherwise calculate it
-        for(MetamorphicIndividual i : newPop.individuals) {
-            if (metricCache.getMetricResults(i).isEmpty()){
-                metricCache.putMetricResults(i,i.inferMetrics());
+        for (MetamorphicIndividual i : newPop.individuals) {
+            if (metricCache.getMetricResults(i).isEmpty()) {
+                metricCache.putMetricResults(i, i.inferMetrics());
             }
         }
         return newPop;
@@ -58,6 +58,7 @@ public class RandomAlgorithm {
 
     /**
      * Check population with the current Pareto set.
+     *
      * @param population the population
      */
     public void checkPareto(MetamorphicPopulation population) {

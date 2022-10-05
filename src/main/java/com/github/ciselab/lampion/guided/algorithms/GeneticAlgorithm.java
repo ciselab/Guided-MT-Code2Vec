@@ -12,8 +12,6 @@ import java.util.random.RandomGenerator;
 
 /**
  * The metamorphic algorithm performs the evolution of the metamorphic populations.
- * A beginners guide to genetic algorithms can be found at
- * https://www.geeksforgeeks.org/simple-genetic-algorithm-sga/#:~:text=Simple%20Genetic%20Algorithm%20(SGA)%20is,each%20of%20the%20solutions%2Findividuals.
  */
 public class GeneticAlgorithm {
 
@@ -28,8 +26,9 @@ public class GeneticAlgorithm {
 
     /**
      * Constructor for this class.
+     *
      * @param genotypeSupport the genotypeSupport.
-     * @param paretoFront the pareto front.
+     * @param paretoFront     the pareto front.
      */
     public GeneticAlgorithm(GeneticConfiguration config, MetricCache cache, GenotypeSupport genotypeSupport, ParetoFront paretoFront, RandomGenerator generator) {
         this.genotypeSupport = genotypeSupport;
@@ -42,6 +41,7 @@ public class GeneticAlgorithm {
 
     /**
      * This method creates the next population with crossover and mutation.
+     *
      * @param pop the current population.
      * @return the new metamorphic population
      */
@@ -57,9 +57,9 @@ public class GeneticAlgorithm {
         while (index < newPopulation.size()) {
             MetamorphicIndividual individual1 = tournamentSelection(pop, randomGenerator).get();
             MetamorphicIndividual individual2 = tournamentSelection(pop, randomGenerator).get();
-            List<MetamorphicIndividual> newIndividuals = crossover(individual1, individual2,randomGenerator);
+            List<MetamorphicIndividual> newIndividuals = crossover(individual1, individual2, randomGenerator);
             // Set parents for new individuals
-            for(MetamorphicIndividual individual: newIndividuals) {
+            for (MetamorphicIndividual individual : newIndividuals) {
                 individual.setParents(individual1, individual2);
             }
             newPopulation.saveIndividual(newIndividuals.get(0));
@@ -72,14 +72,14 @@ public class GeneticAlgorithm {
 
         // Mutate population
         for (int i = 0; i < newPopulation.size(); i++) {
-            if( Math.random() <= config.getMutationRate())
+            if (Math.random() <= config.getMutationRate())
                 mutate(newPopulation.getIndividual(i).get());
         }
 
         // Check if fitness is already known, otherwise calculate it
-        for(MetamorphicIndividual i : newPopulation.individuals) {
-            if (metricCache.getMetricResults(i).isEmpty()){
-                metricCache.putMetricResults(i,i.inferMetrics());
+        for (MetamorphicIndividual i : newPopulation.individuals) {
+            if (metricCache.getMetricResults(i).isEmpty()) {
+                metricCache.putMetricResults(i, i.inferMetrics());
             }
         }
 
@@ -88,24 +88,25 @@ public class GeneticAlgorithm {
 
     /**
      * Mutate the current individual
+     *
      * @param individual The individual to increase or decrease the size of.
      */
     protected void mutate(MetamorphicIndividual individual) {
-        if(individual.getLength() >= config.getMaxGeneLength() || Math.random() > config.getIncreaseSizeRate() )
+        if (individual.getLength() >= config.getMaxGeneLength() || Math.random() > config.getIncreaseSizeRate())
             individual.decrease(randomGenerator);
         else {
             int counter = 0;
-            // The base for this computation is a bit mathy.
+            // The base for this computation is a bit math-y.
             // We are looking for the value y, for which
             // sum(y^x),x->infinity
             // equals our GrowthFactor.
             // This took 1 Professor, 1 PhD and a lot of Wolfram Alpha to derive the base below.
             // If your result vary: These things work on high numbers, so 10000 runs and upwards.
-            double base = (config.getGrowthFactor()-1)/(config.getGrowthFactor());
+            double base = (config.getGrowthFactor() - 1) / (config.getGrowthFactor());
             while (randomGenerator.nextDouble() < Math.pow(base, counter)
-                    && individual.getLength() < config.getMaxGeneLength()){
+                    && individual.getLength() < config.getMaxGeneLength()) {
                 individual.increase(config.getMaxGeneLength(), randomGenerator);
-                counter ++;
+                counter++;
             }
         }
     }
@@ -117,6 +118,7 @@ public class GeneticAlgorithm {
      * The output genes will have the same length as the input genes.
      * Used configuration variables: "CrossoverRate"
      * Note: If Gene A is 10 long and gene B is 20, then crossover can only happen in the first 10 genes for B.
+     *
      * @param individual1 the first metamorphic individual.
      * @param individual2 the second metamorphic individual.
      * @return the new metamorphic individual.
@@ -131,10 +133,9 @@ public class GeneticAlgorithm {
         for (int i = 0; i < individual1.getLength(); i++) {
             // We pick a gene from first individual if
             // A) second Individual is too short
-            // B) We don't want to crossover here (based on chance)
+            // B) We don't want to cross-over here (based on chance)
             if (r.nextDouble() < config.getCrossoverRate()
-                && i< individual2.getLength())
-            {
+                    && i < individual2.getLength()) {
                 firstChild.addGene(individual2.getGene(i));
             } else {
                 firstChild.addGene(individual1.getGene(i));
@@ -160,20 +161,21 @@ public class GeneticAlgorithm {
     /**
      * This method chooses a number of metamorphic individuals to perform tournament selection on.
      * From these metamorphic individuals it chooses the best metamorphic individual and returns that.
-     * Needed config Variable: config.tournamentsize
-     * @param pop the current population.
+     * Needed config Variable: config.tournamentSize
+     *
+     * @param pop    the current population.
      * @param random the random generator used in this run.
      * @return the new metamorphic individual.
      */
     protected Optional<MetamorphicIndividual> tournamentSelection(MetamorphicPopulation pop, RandomGenerator random) {
         // Exit early on empty Pops
-        if(pop.getIndividuals().isEmpty())
+        if (pop.getIndividuals().isEmpty())
             return Optional.empty();
         //TODO: There are big issues when PopulationSize and Element-Amount are not matching!
 
         // Create a tournament population
         MetamorphicPopulation tournament = new MetamorphicPopulation(config.getTournamentSize(), random,
-                 false, genotypeSupport, currentGeneration);
+                false, genotypeSupport, currentGeneration);
 
         Collection<MetamorphicIndividual> pool = config.doTournamentPutBack() ? new ArrayList<>() : new HashSet<>();
         // For each place in the tournament get a random individual
@@ -183,7 +185,7 @@ public class GeneticAlgorithm {
             //TODO: Sometimes this can lead to an issue where we have 4 elements, draw 4 but in tournament are only 3
             // It is very late and I cannot wrap my head around how to fix this. For now I just bump test-probability up.
         }
-        pool.forEach(ind -> tournament.saveIndividual(ind));
+        pool.forEach(tournament::saveIndividual);
 
         return tournament.getFittest();
     }
@@ -191,12 +193,13 @@ public class GeneticAlgorithm {
 
     /**
      * Check population against the current Pareto set.
+     *
      * @param population the population
      */
     public void checkPareto(MetamorphicPopulation population) {
         // This has to be an iteration, as the Pareto Front is maybe altered in during the run.
-        // Hence, it has to be done step by step otherwise you get a concurrentmodificationexception
-        for(int i = 0; i < population.size(); i++) {
+        // Hence, it has to be done step by step otherwise you get a concurrentModificationException
+        for (int i = 0; i < population.size(); i++) {
             paretoFront.addToParetoOptimum(population.getIndividual(i).get());
         }
     }
