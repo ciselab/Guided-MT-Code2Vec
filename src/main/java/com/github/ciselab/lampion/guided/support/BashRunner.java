@@ -20,12 +20,13 @@ public class BashRunner {
 
     ProgramConfiguration config;
 
-    public BashRunner(ProgramConfiguration config){
+    public BashRunner(ProgramConfiguration config) {
         this.config = config;
     }
 
     /**
      * This method runs a command from the code2vec directory.
+     *
      * @param comm the command to be run.
      */
     public void runCommand(String comm) {
@@ -34,6 +35,7 @@ public class BashRunner {
 
     /**
      * This method runs a given command in git bash and prints the results.
+     *
      * @param command the command to be run in git bash.
      */
     private void runBashCommand(String command, Integer countFailed) {
@@ -44,10 +46,10 @@ public class BashRunner {
 
             Process process = processBuilder.start();
 
-            BufferedReader reader=new BufferedReader(new InputStreamReader(
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
                     process.getInputStream()));
             String line;
-            while((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 // Can be used for debugging the code2vec commands.
                 logger.debug(line);
             }
@@ -56,9 +58,9 @@ public class BashRunner {
             if (exitVal == 0) {
                 logger.trace(" --- Command run successfully");
             } else {
-                if(countFailed < config.getBashRetries()) {
+                if (countFailed < config.getBashRetries()) {
                     TimeUnit.SECONDS.sleep(1);
-                    runBashCommand(command, countFailed+1);
+                    runBashCommand(command, countFailed + 1);
                 } else {
                     logger.debug("The command: " + command + "\n does not succed after " + config.getBashRetries() + " tries, quiting the system.");
                     System.exit(1);

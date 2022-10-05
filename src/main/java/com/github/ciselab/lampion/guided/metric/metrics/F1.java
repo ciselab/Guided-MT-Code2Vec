@@ -12,19 +12,19 @@ import java.util.List;
  * This metric is already calculated by the code2vec project and gotten from a file.
  */
 public class F1 extends Metric {
-    private static final String EXPECTEDFILE =  "F1_score_log.txt";
+    private static final String EXPECTEDFILE = "F1_score_log.txt";
 
-    public F1(){
+    public F1() {
         this.name = Name.F1;
     }
 
     private double calculateScore(String path) {
-        if(!path.contains("results"))
+        if (!path.contains("results"))
             path = path + File.separator + "results";
         List<String> lines = readPredictions(path + File.separator + EXPECTEDFILE);
         Double score = Double.NaN;
-        for(String i: lines) {
-            if(i.contains("F1")) {
+        for (String i : lines) {
+            if (i.contains("F1")) {
                 score = Double.parseDouble(i.split("F1: ")[1]);
             }
         }
@@ -49,7 +49,7 @@ public class F1 extends Metric {
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -60,7 +60,7 @@ public class F1 extends Metric {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return new HashCodeBuilder().append(name).append(weight).hashCode();
     }
 }

@@ -22,7 +22,7 @@ import spoon.reflect.CtModel;
 
 /**
  * This class supports the project with all access to the Transformer and code2vec projects.
- *
+ * <p>
  * In more detail, it performs all the transformations on the java code,
  * and then evaluates the pre-trained code2vec model.
  */
@@ -52,7 +52,7 @@ public class GenotypeSupport {
         return initialDataset;
     }
 
-    public long getTotalCode2vevTime(){
+    public long getTotalCode2vevTime() {
         return totalCode2vecTime;
     }
 
@@ -62,7 +62,8 @@ public class GenotypeSupport {
 
     /**
      * Create the transformer based on the key and seed specified.
-     * @param key the transformer key.
+     *
+     * @param key  the transformer key.
      * @param seed the transformer seed.
      * @return a transformer that extends the BaseTransformer.
      */
@@ -88,19 +89,20 @@ public class GenotypeSupport {
         }
     }
 
-    public Transformer createRandomTransformer(RandomGenerator r){
+    public Transformer createRandomTransformer(RandomGenerator r) {
         var constructors = config.lampion.getAvailableTransformerConstructors();
 
         long seed = r.nextLong();
-        int index = r.nextInt(0,constructors.size());
+        int index = r.nextInt(0, constructors.size());
 
         return constructors.get(index).apply(seed);
     }
 
     /**
      * Write the ast to file.
+     *
      * @param engineResult the engine result that we write to file.
-     * @param launcher the launcher.
+     * @param launcher     the launcher.
      */
     private void writeAST(EngineResult engineResult, Launcher launcher) {
         if (engineResult.getWriteJavaOutput()) {
@@ -116,31 +118,32 @@ public class GenotypeSupport {
      * This method creates an engine and runs the transformations on the input directory.
      * This is done by first creating all transformers in a TransformerRegistry and then creating a new Engine.
      * With this engine we can our CtModel that is created with a spoon launcher.
+     *
      * @param individual a genotype, used here mostly for the represented transformers
-     * @param input the input directory.
+     * @param input      the input directory.
      * @return the directory which the transformation .java files are in.
      */
     public String runTransformations(MetamorphicIndividual individual, String input) {
         long start = System.currentTimeMillis();
         TransformerRegistry registry = new TransformerRegistry("fromGA");
-        for(Transformer i: individual.getTransformers()) {
+        for (Transformer i : individual.getTransformers()) {
             if (i instanceof BaseTransformer bt)
                 bt.setTryingToCompile(false);
 
             registry.registerTransformer(i);
         }
         String dir = individual.getGeneration() == -1 ? "initialGen" : "gen" + individual.getGeneration();
-        Path generationDirectory = Path.of(config.program.getDataDirectoryPath().toAbsolutePath().toString(),dir);
+        Path generationDirectory = Path.of(config.program.getDataDirectoryPath().toAbsolutePath().toString(), dir);
         try {
-            if (!Files.isDirectory(generationDirectory)){
+            if (!Files.isDirectory(generationDirectory)) {
                 logger.debug("There was no Folder for Generation " + individual.getGeneration() + " creating one at " + generationDirectory.toString());
                 Files.createDirectory(generationDirectory);
             }
         } catch (IOException e) {
             logger.error(e);
         }
-        String individualHash = Integer.toHexString(individual.hashCode()).substring(0,6);
-        Path outputDir = Path.of(generationDirectory.toAbsolutePath().toString(),individualHash);
+        String individualHash = Integer.toHexString(individual.hashCode()).substring(0, 6);
+        Path outputDir = Path.of(generationDirectory.toAbsolutePath().toString(), individualHash);
 
         logger.debug("Received an Individual (" + individualHash + ") from Generation " + individual.getGeneration());
         logger.debug("Writing changed files to " + outputDir.toAbsolutePath());
@@ -149,8 +152,8 @@ public class GenotypeSupport {
 
         Path engineInputPath = Path.of(config.program.getDataDirectoryPath().toAbsolutePath().toString(), input);
         logger.debug("Path engine input path: " + engineInputPath);
-        Path engineOutputPath = Path.of( outputDir.toAbsolutePath().toString() ,"test");
-        Engine engine = new Engine(engineInputPath.toAbsolutePath().toString(),engineOutputPath.toAbsolutePath().toString() , registry);
+        Path engineOutputPath = Path.of(outputDir.toAbsolutePath().toString(), "test");
+        Engine engine = new Engine(engineInputPath.toAbsolutePath().toString(), engineOutputPath.toAbsolutePath().toString(), registry);
 
         engine.setNumberOfTransformationsPerScope(individual.getTransformers().size(), config.lampion.getTransformationScope());
         engine.setRandomSeed(config.program.getSeed());
@@ -175,12 +178,12 @@ public class GenotypeSupport {
     /**
      * Run all scripts from the code2vec project.
      * This includes first preprocessing the code files and then evaluating the model.
-     *
+     * <p>
      * Due to Code2Vec Logic, always the same file-names are re-used.
      * Invoking this method twice will overwrite existing results.
      * The result-files are copied to a "safe" location, which is (later) stored in the individual.
      *
-     * @param dataset The name of the dataset
+     * @param dataset     The name of the dataset
      * @param destination the path to where the results will be stored
      * @return the path to the directory containing the copied result-files
      */
@@ -194,11 +197,11 @@ public class GenotypeSupport {
         FileManagement.createDirs(path.toAbsolutePath().toString());
         // Preprocessing file.
         String[] datasetArray = dataset.split("/");
-        String data = datasetArray[datasetArray.length-1];
+        String data = datasetArray[datasetArray.length - 1];
         String preprocess = "source preprocess.sh " + path.toAbsolutePath() + " " + data;
         bashRunner.runCommand(preprocess);
 
-        if(!dataset.contains("initialDataset")) {
+        if (!dataset.contains("initialDataset")) {
             // move preprocessed files to correct folder
             String move = "mv  "
                     + config.program.getDataDirectoryPath().toAbsolutePath() + "/" + data + "/* "
@@ -223,8 +226,8 @@ public class GenotypeSupport {
         bashRunner.runCommand("mkdir -p " + resolvedDestination);
 
         String[] resultFiles =
-                new String[]{"./predicted_words.txt","./F1_score_log.txt","./results.txt"};
-        for(String file : resultFiles){
+                new String[]{"./predicted_words.txt", "./F1_score_log.txt", "./results.txt"};
+        for (String file : resultFiles) {
             String copy = "cp  " + file + " " + resolvedDestination;
             bashRunner.runCommand(copy);
         }

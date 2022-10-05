@@ -13,32 +13,33 @@ import java.util.List;
  */
 public class PercentageMRR extends Metric {
 
-    private static final String EXPECTEDFILE =  "results.txt";
+    private static final String EXPECTEDFILE = "results.txt";
+
     public PercentageMRR() {
         this.name = Name.PMRR;
     }
 
     private double calculateScore(String path) {
-        if(!path.contains("results"))
+        if (!path.contains("results"))
             path = path + File.separator + "results";
-        List<String> predictions = readPredictions(path  + File.separator + EXPECTEDFILE);
-        var  scores = new ArrayList<>();
+        List<String> predictions = readPredictions(path + File.separator + EXPECTEDFILE);
+        var scores = new ArrayList<>();
         double score = 0;
         int size = 0;
-        for(int i = 0; i < predictions.size(); i++) {
+        for (int i = 0; i < predictions.size(); i++) {
             String current = predictions.get(i);
-            if(current.contains("No results for predicting:")) {
+            if (current.contains("No results for predicting:")) {
                 score += 0;
                 scores.add(0f);
                 size++;
-            } else if(current.contains("score: ")) {
+            } else if (current.contains("score: ")) {
                 double rank = Double.parseDouble(current.split("score: ")[1]);
-                score += (rank/100);
-                scores.add((float) (rank/100));
+                score += (rank / 100);
+                scores.add((float) (rank / 100));
                 size++;
             }
         }
-        return score/size;
+        return score / size;
     }
 
 
@@ -49,11 +50,11 @@ public class PercentageMRR extends Metric {
 
     @Override
     public Double apply(MetamorphicIndividual individual) {
-        double score =  individual.getResultPath()
+        double score = individual.getResultPath()
                 .map(i -> calculateScore(i))
                 .orElse(0.0);
-        if(!objective)
-            return 1-score;
+        if (!objective)
+            return 1 - score;
         else
             return score;
     }
@@ -65,7 +66,7 @@ public class PercentageMRR extends Metric {
 
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -76,7 +77,7 @@ public class PercentageMRR extends Metric {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return new HashCodeBuilder().append(name).append(weight).hashCode();
     }
 }
