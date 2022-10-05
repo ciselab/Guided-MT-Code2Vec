@@ -26,14 +26,8 @@ public class ParetoFront {
         metrics = cache.getMetrics();
     }
 
-    public Set<List<Double>> getFrontier() {
-        return frontier.stream().map(
-                individual ->
-                    metrics.stream()
-                            .map(m -> m.apply(individual))
-                            .collect(Collectors.toList())
-
-        ).collect(Collectors.toSet());
+    public Set<MetamorphicIndividual> getFrontier(){
+        return this.frontier;
     }
 
     /**
@@ -47,7 +41,8 @@ public class ParetoFront {
             return;
         // Exit early if Element is not Pareto Dominant to anything
         for(var individual: frontier) {
-            if (paretoDominant(individual, solution,metrics)) {
+            boolean isDominated = paretoDominant(individual, solution,metrics);
+            if (isDominated) {
                 return;
             }
         }
@@ -79,16 +74,27 @@ public class ParetoFront {
             return false;
         }
 
-        record Pair(double first, double second){}
-        return metrics.stream()
-                .map(x -> new Pair(x.apply(a),x.apply(b)))
-                .noneMatch(p -> p.first < p.second);
+        boolean allEqual = true;
+        for(Metric m:metrics){
+            // Case 1: Is worse in any?
+            var aVal = m.apply(a);
+            var bVal =  m.apply(b);
+            if (aVal < bVal)
+                return false;
+            // Double Equality is difficult, so we check for the difference to be super duper small
+            allEqual = allEqual && Math.abs(aVal - bVal) < 0.00001;
+        }
+        // Case 2: All "as good"?
+        if(allEqual)
+            return false;
+        // Case 3: Default Return True
+        return true;
     }
 
     public String displayPareto() {
-        Set<List<Double>> paretoValues = this.getFrontier();
+        Set<MetamorphicIndividual> paretoIndivs = this.getFrontier();
         String out = "{";
-        for(var v: paretoValues)
+        for(var v: paretoIndivs)
             out += v.toString() + ", ";
         return out.substring(0, out.length()-2) + "}";
     }
