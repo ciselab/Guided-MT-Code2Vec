@@ -1,6 +1,7 @@
 package com.github.ciselab.lampion.guided.metric;
 
 import com.github.ciselab.lampion.guided.algorithms.MetamorphicIndividual;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public abstract class Metric implements Function<MetamorphicIndividual, Double> 
         objective = obj.equalsIgnoreCase("max");
     }
 
-    public void setObjective(boolean obj){
+    public void setObjective(boolean obj) {
         objective = obj;
     }
 
@@ -50,9 +51,12 @@ public abstract class Metric implements Function<MetamorphicIndividual, Double> 
         return name.toString();
     }
 
-    public double getWeight(){return weight;}
-    public void setWeight(double weight){
-        if (weight > 1 || weight < -1){
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        if (weight > 1 || weight < -1) {
             logger.warn("Unusual weight received for Metric: " + weight);
         }
         this.weight = weight;
@@ -60,6 +64,7 @@ public abstract class Metric implements Function<MetamorphicIndividual, Double> 
 
     /**
      * Read predictions from a particular file path.
+     *
      * @param filePath the file path, should include the code2vec model's results.
      * @return a list of strings with the predictions.
      */
@@ -68,22 +73,23 @@ public abstract class Metric implements Function<MetamorphicIndividual, Double> 
         try {
             BufferedReader bf = new BufferedReader(new FileReader(filePath));
             String line = bf.readLine();
-            while(line != null) {
+            while (line != null) {
                 predictions.add(line);
                 line = bf.readLine();
             }
             bf.close();
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.error("Couldn't read file of path: " + filePath);
         }
         return predictions;
     }
+
     @Override
     public boolean equals(Object o) {
-        if (o == this){
+        if (o == this) {
             return true;
         }
-        if (o instanceof Metric){
+        if (o instanceof Metric) {
             var m = (Metric) o;
             return m.getName().equals(this.getName());
         }
@@ -91,15 +97,17 @@ public abstract class Metric implements Function<MetamorphicIndividual, Double> 
     }
 
     public abstract boolean isSecondary();
+
     public abstract boolean canBeBiggerThanOne();
 
     /**
      * Maps a given String to the known Metric Enum Type
+     *
      * @param str the string that might match one of the Implemented Metrics
      * @return the resolved Enum Constant, UNIMPLEMENTED in case of failure.
      */
-    public static final Name resolveName(String str){
-        return switch(str.toLowerCase()) {
+    public static final Name resolveName(String str) {
+        return switch (str.toLowerCase()) {
             case "mrr" -> Name.MRR;
             case "pmrr" -> Name.PMRR;
             case "percentagemrr" -> Name.PMRR;

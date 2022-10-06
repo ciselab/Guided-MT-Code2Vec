@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,10 +59,10 @@ public class FileManagement {
             throws IOException {
         logger.debug("Copying " + sourceDirectoryLocation + " to " + destinationDirectoryLocation);
         //String path = Path.of(sourceDirectoryLocation).toAbsolutePath().toString();
-        File dir = new File(sourceDirectoryLocation);
-        if(!dir.exists()) {
-            if(dir.mkdirs())
-                logger.debug("Created directory ("+sourceDirectoryLocation+")necessary for the data.");
+        File dir = new File(destinationDirectoryLocation);
+        if (!dir.exists()) {
+            if (dir.mkdirs())
+                logger.debug("Created directory (" + destinationDirectoryLocation + ")necessary for the data.");
         }
 
         Files.walk(Paths.get(sourceDirectoryLocation))
@@ -78,6 +79,7 @@ public class FileManagement {
 
     /**
      * Create the correct directories for the code2vec application.
+     *
      * @param path path to the dataset.
      */
     public static boolean createDirs(String path) {
@@ -90,12 +92,13 @@ public class FileManagement {
 
     /**
      * Moves all files from subdirectories to the main target directory.
-     * @param toDir the main target directory.
+     *
+     * @param toDir   the main target directory.
      * @param currDir the directory we are currently in.
      */
     public static void removeSubDirs(File toDir, File currDir) {
         File[] files = currDir.listFiles();
-        if(files!=null) {
+        if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     removeSubDirs(toDir, file);
@@ -124,6 +127,7 @@ public class FileManagement {
 
     /**
      * Delete directory and all its contents.
+     *
      * @param directoryToBeDeleted the directory to be deleted.
      */
     private static void deleteDirectory(File directoryToBeDeleted) {

@@ -1,4 +1,4 @@
-package com.github.ciselab.support;
+package com.github.ciselab.lampion.guided.support;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,7 +72,13 @@ public class ConfigManagerTest {
 
         assertTrue(config.program.useGA());
         assertEquals(105,config.program.getSeed());
-        assertEquals("F:/My/Path",config.program.getBashPath().toString());
+
+        String windowsPath = "F:\\My\\Path";
+        String linuxPath = "F:/My/Path";
+        String receivedPath = config.program.getBashPath().toString();
+        boolean matchesEitherPath = receivedPath.equals(windowsPath) || receivedPath.equals(linuxPath);
+
+        assertTrue(matchesEitherPath);
     }
 
 
@@ -87,6 +93,7 @@ public class ConfigManagerTest {
         assertEquals(0.5, config.genetic.getElitismRate(),0.01);
         assertEquals(0.15, config.genetic.getMutationRate(),0.01);
         assertEquals(0.4, config.genetic.getIncreaseSizeRate(),0.01);
+        assertEquals(77.0, config.genetic.getGrowthFactor(),0.01);
 
         assertEquals(25, config.genetic.getMaxGeneLength());
         assertEquals(12, config.genetic.getPopSize());

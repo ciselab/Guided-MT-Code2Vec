@@ -1,0 +1,4 @@
+No results for predicting: reset|stream|offset
+Original: close, predicted 1st: close, score: 33.340607
+[0.4137931  0.48275862 0.48275862 0.51724138 0.51724138 0.51724138
+ 0.51724138 0.51724138 0.51724138 0.51724138]
