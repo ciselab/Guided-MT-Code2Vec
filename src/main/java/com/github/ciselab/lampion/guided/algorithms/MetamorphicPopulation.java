@@ -2,7 +2,6 @@ package com.github.ciselab.lampion.guided.algorithms;
 
 import com.github.ciselab.lampion.guided.support.GenotypeSupport;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -11,35 +10,54 @@ import java.util.random.RandomGenerator;
 public class MetamorphicPopulation {
 
     List<MetamorphicIndividual> individuals;
-    int populationSize;
+    int generation=0;
     GenotypeSupport genotypeSupport;
 
-    /**
-     * Initialize Metamorphic population, the initial population will be half of length 1 and half of length 2.
-     * After that the evolution begins.
-     *
-     * @param popSize         the population size.
-     * @param randomGenerator the random generator. This is kept the same everywhere for testing purposes.
-     * @param initialize      whether the population should be initialized or just created as an object.
-     * @param generation      the generation of the current population.
-     */
-    public MetamorphicPopulation(int popSize, RandomGenerator randomGenerator, boolean initialize
-            , GenotypeSupport gen, int generation) {
+    public MetamorphicPopulation( GenotypeSupport gen, int generation) {
         genotypeSupport = gen;
-        this.populationSize = popSize;
         individuals = new LinkedList<>();
-        if (initialize) {
-            int cutOff = popSize / 2;
-            for (int i = 0; i < cutOff; i++) {
-                MetamorphicIndividual individual = new MetamorphicIndividual(genotypeSupport, generation);
-                individual.populateIndividual(randomGenerator, 1);
-                saveIndividual(individual);
-            }
-            for (int j = cutOff; j < popSize; j++) {
-                MetamorphicIndividual individual = new MetamorphicIndividual(genotypeSupport, generation);
-                individual.populateIndividual(randomGenerator, 2);
-                saveIndividual(individual);
-            }
+        this.generation = generation;
+    }
+    public MetamorphicPopulation( GenotypeSupport gen) {
+        genotypeSupport = gen;
+        individuals = new LinkedList<>();
+        this.generation = 0;
+    }
+
+    /**
+     * Initializes the Population by a given size.
+     * This will create brand new individuals that have between one and three transformations.
+     * @param populationSize   How many new Individuals to put in the Population
+     * @param randomGenerator A random number provider
+     */
+    public void initialize(int populationSize, RandomGenerator randomGenerator){
+        if (populationSize < 1){
+            throw new IllegalArgumentException("PopulationSize and GrowthFactor must be bigger than 0");
+        }
+        for (int i = 0; i < populationSize; i++) {
+            MetamorphicIndividual individual = new MetamorphicIndividual(genotypeSupport, generation);
+            int transformations = randomGenerator.nextInt(1,3);
+            individual.populateIndividual(randomGenerator, transformations);
+            saveIndividual(individual);
+        }
+    }
+
+    /**
+     * Initializes the Population by a given size.
+     * This will create brand new individuals that have between one and growthfactor transformations.
+     * @param populationSize   How many new Individuals to put in the Population
+     * @param growthfactor up to how many transformation every individual has
+     * @param randomGenerator A random number provider
+     */
+    public void initialize(int populationSize, int growthfactor, RandomGenerator randomGenerator){
+        if (populationSize < 1 || growthfactor < 1){
+            throw new IllegalArgumentException("PopulationSize and GrowthFactor must be bigger than 0");
+        }
+        for (int i = 0; i < populationSize; i++) {
+            MetamorphicIndividual individual = new MetamorphicIndividual(genotypeSupport, generation);
+            int transformations = randomGenerator.nextInt(1,growthfactor);
+            individual.populateIndividual(randomGenerator, transformations);
+            saveIndividual(individual);
         }
     }
 
@@ -108,7 +126,7 @@ public class MetamorphicPopulation {
      * @return the size of the population.
      */
     public int size() {
-        return populationSize;
+        return individuals.size();
     }
 
     @Override

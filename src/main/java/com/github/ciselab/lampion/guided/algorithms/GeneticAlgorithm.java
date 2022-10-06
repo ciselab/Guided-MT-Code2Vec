@@ -48,8 +48,8 @@ public class GeneticAlgorithm {
     public MetamorphicPopulation evolvePopulation(MetamorphicPopulation pop) {
         logger.debug("Evolve the old population");
         currentGeneration += 1;
-        MetamorphicPopulation newPopulation = new MetamorphicPopulation(pop.size(),
-                randomGenerator, false, genotypeSupport, currentGeneration);
+        MetamorphicPopulation newPopulation =
+                new MetamorphicPopulation(genotypeSupport, currentGeneration);
 
         // Loop over the population size and create new individuals with
         // crossover
@@ -174,8 +174,7 @@ public class GeneticAlgorithm {
         //TODO: There are big issues when PopulationSize and Element-Amount are not matching!
 
         // Create a tournament population
-        MetamorphicPopulation tournament = new MetamorphicPopulation(config.getTournamentSize(), random,
-                false, genotypeSupport, currentGeneration);
+        MetamorphicPopulation tournament = new MetamorphicPopulation(genotypeSupport, currentGeneration);
 
         Collection<MetamorphicIndividual> pool = config.doTournamentPutBack() ? new ArrayList<>() : new HashSet<>();
         // For each place in the tournament get a random individual

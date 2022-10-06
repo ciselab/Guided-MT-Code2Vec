@@ -1,9 +1,5 @@
 package com.github.ciselab.lampion.guided.algorithms;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.github.ciselab.lampion.guided.helpers.StubMetric;
 import com.github.ciselab.lampion.guided.configuration.Configuration;
 import com.github.ciselab.lampion.guided.metric.Metric;
@@ -20,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static com.github.ciselab.lampion.guided.helpers.Utils.makeEmptyCache;
+import static org.junit.jupiter.api.Assertions.*;
+
 public class MetamorphicPopulationTest {
 
     @AfterEach
@@ -35,7 +34,8 @@ public class MetamorphicPopulationTest {
         MetricCache cache = new MetricCache();
         GenotypeSupport support = new GenotypeSupport(cache,config);
 
-        MetamorphicPopulation population = new MetamorphicPopulation(3, r,  true, support, 0);
+        MetamorphicPopulation population = new MetamorphicPopulation(support, 0);
+        population.initialize(3,r);
         assertEquals(population.size(), 3);
         for(int i = 0; i < population.size(); i++) {
             assertNotNull(population.getIndividual(i));
@@ -49,7 +49,9 @@ public class MetamorphicPopulationTest {
         MetricCache cache = new MetricCache();
         GenotypeSupport support = new GenotypeSupport(cache,config);
 
-        MetamorphicPopulation population = new MetamorphicPopulation(3, r, true, support, 0);
+        MetamorphicPopulation population = new MetamorphicPopulation(support, 0);
+        population.initialize(3,r);
+
         assertTrue(population.toString().contains("MetamorphicPopulation{"));
     }
 
@@ -81,7 +83,7 @@ public class MetamorphicPopulationTest {
         bMetrics.put(stub,0.5);
         cache.putMetricResults(b,bMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support,0);
 
 
         testObject.saveIndividual(a);
@@ -122,7 +124,7 @@ public class MetamorphicPopulationTest {
         bMetrics.put(stub,0.5);
         cache.putMetricResults(b,bMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support,0);
 
 
         testObject.saveIndividual(a);
@@ -163,7 +165,7 @@ public class MetamorphicPopulationTest {
         bMetrics.put(stub,0.5);
         cache.putMetricResults(b,bMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support,0);
 
 
         testObject.saveIndividual(a);
@@ -203,7 +205,7 @@ public class MetamorphicPopulationTest {
         bMetrics.put(stub,0.2);
         cache.putMetricResults(b,bMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support,0);
 
 
         testObject.saveIndividual(a);
@@ -242,7 +244,7 @@ public class MetamorphicPopulationTest {
         bMetrics.put(stub,0.5);
         cache.putMetricResults(b,bMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
 
         testObject.saveIndividual(a);
@@ -282,7 +284,7 @@ public class MetamorphicPopulationTest {
         bMetrics.put(stub,0.2);
         cache.putMetricResults(b,bMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
 
         testObject.saveIndividual(a);
@@ -316,7 +318,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub,fitness);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
 
         testObject.saveIndividual(a);
@@ -348,7 +350,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub,fitness);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
 
         testObject.saveIndividual(a);
@@ -380,7 +382,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub,fitness);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
 
         testObject.saveIndividual(a);
@@ -414,7 +416,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub,fitness);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
 
         testObject.saveIndividual(a);
@@ -456,7 +458,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub2,1.0);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
         testObject.saveIndividual(a);
 
         var result = testObject.getFittest();
@@ -497,7 +499,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub2,0.0);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
         testObject.saveIndividual(a);
 
         var result = testObject.getFittest();
@@ -539,7 +541,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub2,1.0);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
         testObject.saveIndividual(a);
 
         var result = testObject.getFittest();
@@ -575,7 +577,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub2,1.0);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
         testObject.saveIndividual(a);
 
         var result = testObject.getFittest();
@@ -610,7 +612,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub2,1.0);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
         testObject.saveIndividual(a);
 
         var result = testObject.getFittest();
@@ -651,7 +653,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub3,1.0);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
         testObject.saveIndividual(a);
 
         var result = testObject.getFittest();
@@ -692,7 +694,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub3,0.0);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
         testObject.saveIndividual(a);
 
         var result = testObject.getFittest();
@@ -733,7 +735,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub3,0.0);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
         testObject.saveIndividual(a);
 
         var result = testObject.getFittest();
@@ -775,7 +777,7 @@ public class MetamorphicPopulationTest {
         aMetrics.put(stub2,0.0);
         cache.putMetricResults(a,aMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
         testObject.saveIndividual(a);
 
         var result = testObject.getFittest();
@@ -813,7 +815,7 @@ public class MetamorphicPopulationTest {
         bMetrics.put(stub,0.5);
         cache.putMetricResults(b,bMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
 
         testObject.saveIndividual(a);
@@ -852,7 +854,7 @@ public class MetamorphicPopulationTest {
         bMetrics.put(stub,0.5);
         cache.putMetricResults(b,bMetrics);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
 
         testObject.saveIndividual(a);
@@ -873,7 +875,7 @@ public class MetamorphicPopulationTest {
 
         MetamorphicIndividual a = new MetamorphicIndividual(support,0);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
         testObject.saveIndividual(a);
 
@@ -881,7 +883,7 @@ public class MetamorphicPopulationTest {
     }
 
     @Test
-    public void testSize_savingIndividual_sizeIsPresetSize(){
+    public void testSize_savingIndividual_sizeIsIncreased(){
         Random r = new Random(5);
         var config = new Configuration();
         MetricCache cache = makeEmptyCache();
@@ -889,20 +891,70 @@ public class MetamorphicPopulationTest {
 
         MetamorphicIndividual a = new MetamorphicIndividual(support,0);
 
-        MetamorphicPopulation testObject = new MetamorphicPopulation(2,r,false,support,0);
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
         testObject.saveIndividual(a);
 
-        assertEquals(2,testObject.size());
+        assertEquals(1,testObject.size());
     }
 
-    /**
-     * @return A Cache without any active metrics, will not call file system for any evaluation
-     */
-    private static MetricCache makeEmptyCache(){
-        MetricCache cache = new MetricCache();
-        cache.getMetrics().removeIf(x -> true);
-        cache.getActiveMetrics().removeIf(x -> true);
-        return cache;
+    @Test
+    public void testInitialize_isDeterministic(){
+        Random r1 = new Random(5);
+        Random r2 = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
+        testObject.initialize(10,r1);
+
+        MetamorphicPopulation comparison = new MetamorphicPopulation(support);
+        comparison.initialize(10,r2);
+
+        assertEquals(testObject.size(),comparison.size());
+
+        for(int i = 0; i< testObject.size();i++){
+            assertEquals(testObject.getIndividual(i),comparison.getIndividual(i));
+        }
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1,3,10,20,50,100,250})
+    public void testInitialize_shouldHaveInitializationSize(int size){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
+
+        testObject.initialize(size,r);
+
+        assertEquals(size,testObject.size());
+    }
+
+    @Test
+    public  void testInitialize_zeroValue_throwsError(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
+
+        assertThrows(IllegalArgumentException.class, () -> testObject.initialize(0,r));
+    }
+    @Test
+    public  void testInitialize_negativeValue_throwsError(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
+
+        assertThrows(IllegalArgumentException.class, () -> testObject.initialize(-1,r));
+    }
+
 }

@@ -100,7 +100,7 @@ public class Main {
         try {
             FileWriter resultWriter = new FileWriter(logDir + "results.txt");
             MetamorphicPopulation myPop =
-                    new MetamorphicPopulation(config.genetic.getPopSize(), randomGenerator, false, genotypeSupport, 0);
+                    new MetamorphicPopulation(genotypeSupport, 0);
             for (int i = 0; i < config.genetic.getPopSize(); i++) {
                 MetamorphicIndividual newIndiv = new MetamorphicIndividual(genotypeSupport, 0);
                 newIndiv.populateIndividual(randomGenerator, 1);
@@ -178,7 +178,8 @@ public class Main {
         try {
             FileWriter resultWriter = new FileWriter(logDir + "GA_results.txt");
             MetamorphicPopulation myPop =
-                    new MetamorphicPopulation(config.genetic.getPopSize(), random, true, genotypeSupport, 0);
+                    new MetamorphicPopulation(genotypeSupport, 0);
+            myPop.initialize(config.genetic.getPopSize(),(int) config.genetic.getGrowthFactor(),random);
             MetamorphicIndividual best = new MetamorphicIndividual(genotypeSupport, -1);
             best.setJavaPath(Path.of(config.program.getDataDirectoryPath().toString(), genotypeSupport.getInitialDataset()).toString());
             double bestFitness = writeInitialPopulationResults(resultWriter, myPop, best);
