@@ -11,7 +11,7 @@ import java.util.function.Function;
 public class LampionConfiguration {
 
     private boolean removeAllComments = false;
-    private Engine.TransformationScope transformationScope = Engine.TransformationScope.perClass;
+    private Engine.TransformationScope transformationScope = Engine.TransformationScope.perClassEach;
 
     private int maxTransformerValue = 6; // Including 0, so 7 transformers
 
