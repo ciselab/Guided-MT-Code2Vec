@@ -142,7 +142,7 @@ public class GenotypeSupport {
         } catch (IOException e) {
             logger.error(e);
         }
-        String individualHash = Integer.toHexString(individual.hashCode()).substring(0, 6);
+        String individualHash = individual.hexHash();
         Path outputDir = Path.of(generationDirectory.toAbsolutePath().toString(), individualHash);
 
         logger.debug("Received an Individual (" + individualHash + ") from Generation " + individual.getGeneration());
