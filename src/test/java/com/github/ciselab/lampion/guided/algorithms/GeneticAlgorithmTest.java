@@ -31,8 +31,7 @@ public class GeneticAlgorithmTest {
         var config = new Configuration();
         MetricCache cache = new MetricCache();
         GenotypeSupport support = new GenotypeSupport(cache,config);
-        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),new SplittableRandom(101010));
-    }
+        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),new Random(1));    }
 
 
     @Tag("Probabilistic")
@@ -47,7 +46,7 @@ public class GeneticAlgorithmTest {
         MetricCache cache = new MetricCache();
         GenotypeSupport support = new GenotypeSupport(cache,config);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var averageIncrease = IntStream.range(0,100)
                 .map(t -> {
@@ -75,7 +74,7 @@ public class GeneticAlgorithmTest {
         MetricCache cache = new MetricCache();
         GenotypeSupport support = new GenotypeSupport(cache,config);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var averageIncrease = IntStream.range(0,200)
                 .map(t -> {
@@ -104,7 +103,7 @@ public class GeneticAlgorithmTest {
         MetricCache cache = new MetricCache();
         GenotypeSupport support = new GenotypeSupport(cache,config);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var anyAboveMaxSize = IntStream.range(0,250)
                 .map(t -> {
@@ -128,7 +127,7 @@ public class GeneticAlgorithmTest {
         MetricCache cache = new MetricCache();
         GenotypeSupport support = new GenotypeSupport(cache,config);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var averageIncrease = IntStream.range(0,250)
                 .map(t -> {
@@ -155,7 +154,7 @@ public class GeneticAlgorithmTest {
         MetricCache cache = new MetricCache();
         GenotypeSupport support = new GenotypeSupport(cache,config);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var anyAboveGrowthRate = IntStream.range(0,250)
                 .map(t -> {
@@ -179,7 +178,7 @@ public class GeneticAlgorithmTest {
         MetricCache cache = new MetricCache();
         GenotypeSupport support = new GenotypeSupport(cache,config);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var anyAboveGrowthRate = IntStream.range(0,2000)
                 .map(t -> {
@@ -203,7 +202,7 @@ public class GeneticAlgorithmTest {
         MetamorphicIndividual a = new MetamorphicIndividual(support,0);
         MetamorphicIndividual b = new MetamorphicIndividual(support,0);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var results = ga.crossover(a,b,r);
 
@@ -229,7 +228,7 @@ public class GeneticAlgorithmTest {
         MetamorphicIndividual b = new MetamorphicIndividual(support,0);
         b.populateIndividual(r,10);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var results = ga.crossover(a,b,r);
 
@@ -256,7 +255,7 @@ public class GeneticAlgorithmTest {
         a.populateIndividual(r,10);
         MetamorphicIndividual b = new MetamorphicIndividual(support,0);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var results = ga.crossover(a,b,r);
 
@@ -283,7 +282,7 @@ public class GeneticAlgorithmTest {
         MetamorphicIndividual b = new MetamorphicIndividual(support,0);
         b.populateIndividual(r,10);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var results = ga.crossover(a,b,r);
 
@@ -311,7 +310,7 @@ public class GeneticAlgorithmTest {
         MetamorphicIndividual b = new MetamorphicIndividual(support,0);
         b.populateIndividual(r,bSize);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var results = ga.crossover(a,b,r);
 
@@ -341,7 +340,7 @@ public class GeneticAlgorithmTest {
         MetamorphicIndividual b = new MetamorphicIndividual(support,0);
         b.populateIndividual(r,bSize);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var results = ga.crossover(a,b,r);
 
@@ -369,7 +368,7 @@ public class GeneticAlgorithmTest {
         MetamorphicIndividual b = new MetamorphicIndividual(support,0);
         b.populateIndividual(r,bSize);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var gen1 = new SplittableRandom(55);
         var gen2 = new SplittableRandom(100);
@@ -399,7 +398,7 @@ public class GeneticAlgorithmTest {
         MetamorphicIndividual b = new MetamorphicIndividual(support,0);
         b.populateIndividual(r,bSize);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,new ParetoFront(cache),r);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,support,new ParetoFront(cache),r);
 
         var gen1 = new SplittableRandom(55);
         var gen2 = new SplittableRandom(55);
@@ -436,7 +435,7 @@ public class GeneticAlgorithmTest {
         testPopulation.saveIndividual(a);
 
         config.genetic.setTournamentSize(1);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         var result = ga.tournamentSelection(testPopulation,r);
 
@@ -469,13 +468,47 @@ public class GeneticAlgorithmTest {
         testPopulation.saveIndividual(b);
 
         config.genetic.setTournamentSize(1);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         var result = ga.tournamentSelection(testPopulation,r);
 
         assertTrue(result.isPresent());
         assertEquals(a,result.get());
     }
+
+
+    @Tag("Integration")
+    @Test
+    public void testEvolvePop_shouldHaveHigherGeneration(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,3);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,4);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.9);
+        storeIndividualForCaching(b,cache,stub,0.5);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(support);
+        testPopulation.saveIndividual(a);
+        testPopulation.saveIndividual(b);
+
+        config.genetic.setTournamentSize(1);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
+
+        var result = ga.evolvePopulation(testPopulation);
+
+        assertEquals(1,result.getGeneration());
+    }
+
 
     @Tag("Regression")
     @Tag("Integration")
@@ -508,7 +541,7 @@ public class GeneticAlgorithmTest {
 
         config.genetic.setTournamentPutBack(false);
         config.genetic.setTournamentSize(3);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         var result = ga.tournamentSelection(testPopulation,r);
 
@@ -549,7 +582,7 @@ public class GeneticAlgorithmTest {
 
         config.genetic.setTournamentPutBack(true);
         config.genetic.setTournamentSize(3);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         var result = ga.tournamentSelection(testPopulation,r);
 
@@ -586,7 +619,7 @@ public class GeneticAlgorithmTest {
         testPopulation.saveIndividual(c);
 
         config.genetic.setTournamentSize(10);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         var result = ga.tournamentSelection(testPopulation,r);
 
@@ -620,7 +653,7 @@ public class GeneticAlgorithmTest {
 
         config.genetic.setTournamentSize(5);
         config.genetic.setTournamentPutBack(false);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         var result = ga.tournamentSelection(testPopulation,r);
 
@@ -658,7 +691,7 @@ public class GeneticAlgorithmTest {
         testPopulation.saveIndividual(c);
 
         config.genetic.setTournamentSize(20);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         var result = ga.tournamentSelection(testPopulation,r);
 
@@ -696,7 +729,7 @@ public class GeneticAlgorithmTest {
 
         config.genetic.setTournamentSize(3);
         config.genetic.setTournamentPutBack(false);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         var result = ga.tournamentSelection(testPopulation,r);
 
@@ -730,7 +763,7 @@ public class GeneticAlgorithmTest {
 
         config.genetic.setTournamentSize(1);
         config.genetic.setTournamentPutBack(false);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         Random random1 = new Random(10);
         Random random2 = new Random(10);
@@ -754,7 +787,7 @@ public class GeneticAlgorithmTest {
         MetamorphicPopulation testPopulation = new MetamorphicPopulation(support,0);
 
         config.genetic.setTournamentSize(10);
-        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+        GeneticAlgorithm ga= new GeneticAlgorithm(config.genetic,support,pareto,r);
 
         var result = ga.tournamentSelection(testPopulation,r);
 

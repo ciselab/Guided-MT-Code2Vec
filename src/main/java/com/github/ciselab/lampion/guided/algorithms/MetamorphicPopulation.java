@@ -138,4 +138,8 @@ public class MetamorphicPopulation {
     public List<MetamorphicIndividual> getIndividuals() {
         return this.individuals;
     }
+
+    public int getGeneration() {
+        return this.generation;
+    }
 }

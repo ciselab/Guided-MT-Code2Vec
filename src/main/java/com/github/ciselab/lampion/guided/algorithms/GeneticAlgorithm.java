@@ -19,7 +19,6 @@ public class GeneticAlgorithm {
 
     private RandomGenerator randomGenerator;
     private final GenotypeSupport genotypeSupport;
-    private final MetricCache metricCache;
     private final ParetoFront paretoFront;
     private final Logger logger = LogManager.getLogger(GeneticAlgorithm.class);
     private int currentGeneration;
@@ -30,11 +29,10 @@ public class GeneticAlgorithm {
      * @param genotypeSupport the genotypeSupport.
      * @param paretoFront     the pareto front.
      */
-    public GeneticAlgorithm(GeneticConfiguration config, MetricCache cache, GenotypeSupport genotypeSupport, ParetoFront paretoFront, RandomGenerator generator) {
+    public GeneticAlgorithm(GeneticConfiguration config, GenotypeSupport genotypeSupport, ParetoFront paretoFront, RandomGenerator generator) {
         this.genotypeSupport = genotypeSupport;
         this.randomGenerator = generator;
         this.config = config;
-        metricCache = cache;
         this.paretoFront = paretoFront;
         currentGeneration = 0;
     }
@@ -74,13 +72,6 @@ public class GeneticAlgorithm {
         for (int i = 0; i < newPopulation.size(); i++) {
             if (Math.random() <= config.getMutationRate())
                 mutate(newPopulation.getIndividual(i).get());
-        }
-
-        // Check if fitness is already known, otherwise calculate it
-        for (MetamorphicIndividual i : newPopulation.getIndividuals()) {
-            if (metricCache.getMetricResults(i).isEmpty()) {
-                metricCache.putMetricResults(i, i.inferMetrics());
-            }
         }
 
         return newPopulation;

@@ -11,25 +11,20 @@ import java.util.random.RandomGenerator;
 
 public class RandomAlgorithm {
 
-    private int maxTransformerValue;
     private int currentGeneration;
     private RandomGenerator randomGenerator;
     private final GenotypeSupport genotypeSupport;
-    private final MetricCache metricCache;
     private final ParetoFront paretoFront;
     private final Logger logger = LogManager.getLogger(RandomAlgorithm.class);
 
 
-    public String initializeParameters(int maxValue, RandomGenerator randomGenerator) {
+    public void initializeParameters(RandomGenerator randomGenerator) {
         logger.debug("Initialize parameters for the random algorithm");
-        maxTransformerValue = maxValue;
         this.randomGenerator = randomGenerator;
-        return String.format(Locale.UK, "{max transformer value: %d}", maxValue);
     }
 
     public RandomAlgorithm(GenotypeSupport gen, ParetoFront paretoFront) {
         genotypeSupport = gen;
-        metricCache = gen.getMetricCache();
         this.paretoFront = paretoFront;
         currentGeneration = 0;
     }
@@ -47,12 +42,6 @@ public class RandomAlgorithm {
             newPop.saveIndividual(newIndiv);
         }
 
-        // Check if fitness is already known, otherwise calculate it
-        for (MetamorphicIndividual i : newPop.getIndividuals()) {
-            if (metricCache.getMetricResults(i).isEmpty()) {
-                metricCache.putMetricResults(i, i.inferMetrics());
-            }
-        }
         return newPop;
     }
 
