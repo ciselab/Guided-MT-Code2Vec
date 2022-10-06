@@ -9,16 +9,16 @@ import java.util.random.RandomGenerator;
 
 public class MetamorphicPopulation {
 
-    List<MetamorphicIndividual> individuals;
-    int generation=0;
-    GenotypeSupport genotypeSupport;
+    private List<MetamorphicIndividual> individuals;
+    private final int generation;
+    private GenotypeSupport genotypeSupport;
 
-    public MetamorphicPopulation( GenotypeSupport gen, int generation) {
+    public MetamorphicPopulation(GenotypeSupport gen, int generation) {
         genotypeSupport = gen;
         individuals = new LinkedList<>();
         this.generation = generation;
     }
-    public MetamorphicPopulation( GenotypeSupport gen) {
+    public MetamorphicPopulation(GenotypeSupport gen) {
         genotypeSupport = gen;
         individuals = new LinkedList<>();
         this.generation = 0;
@@ -26,36 +26,31 @@ public class MetamorphicPopulation {
 
     /**
      * Initializes the Population by a given size.
-     * This will create brand new individuals that have between one and three transformations.
+     * This will create brand-new individuals that have between one and three transformations.
+     * Number of Transformations is evenly distributed.
      * @param populationSize   How many new Individuals to put in the Population
      * @param randomGenerator A random number provider
      */
     public void initialize(int populationSize, RandomGenerator randomGenerator){
-        if (populationSize < 1){
-            throw new IllegalArgumentException("PopulationSize and GrowthFactor must be bigger than 0");
-        }
-        for (int i = 0; i < populationSize; i++) {
-            MetamorphicIndividual individual = new MetamorphicIndividual(genotypeSupport, generation);
-            int transformations = randomGenerator.nextInt(1,3);
-            individual.populateIndividual(randomGenerator, transformations);
-            saveIndividual(individual);
-        }
+        final int DEFAULT_GROWTHRATE = 3;
+        initialize(populationSize,DEFAULT_GROWTHRATE,randomGenerator);
     }
 
     /**
      * Initializes the Population by a given size.
-     * This will create brand new individuals that have between one and growthfactor transformations.
+     * This will create brand-new individuals that have between one and growthfactor transformations.
+     * Number of Transformations is evenly distributed.
      * @param populationSize   How many new Individuals to put in the Population
-     * @param growthfactor up to how many transformation every individual has
+     * @param growthFactor up to how many transformation every individual has
      * @param randomGenerator A random number provider
      */
-    public void initialize(int populationSize, int growthfactor, RandomGenerator randomGenerator){
-        if (populationSize < 1 || growthfactor < 1){
+    public void initialize(int populationSize, int growthFactor, RandomGenerator randomGenerator){
+        if (populationSize < 1 || growthFactor < 1){
             throw new IllegalArgumentException("PopulationSize and GrowthFactor must be bigger than 0");
         }
         for (int i = 0; i < populationSize; i++) {
             MetamorphicIndividual individual = new MetamorphicIndividual(genotypeSupport, generation);
-            int transformations = randomGenerator.nextInt(1,growthfactor);
+            int transformations = randomGenerator.nextInt(1,growthFactor);
             individual.populateIndividual(randomGenerator, transformations);
             saveIndividual(individual);
         }

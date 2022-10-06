@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Locale;
-import java.util.Optional;
 import java.util.random.RandomGenerator;
 
 public class RandomAlgorithm {
@@ -49,7 +48,7 @@ public class RandomAlgorithm {
         }
 
         // Check if fitness is already known, otherwise calculate it
-        for (MetamorphicIndividual i : newPop.individuals) {
+        for (MetamorphicIndividual i : newPop.getIndividuals()) {
             if (metricCache.getMetricResults(i).isEmpty()) {
                 metricCache.putMetricResults(i, i.inferMetrics());
             }

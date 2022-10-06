@@ -920,6 +920,23 @@ public class MetamorphicPopulationTest {
     }
 
     @ParameterizedTest
+    @ValueSource(doubles = {5.0,10.0,95.0,200.0})
+    public void testInitialize_withGrowthFactor_shouldHaveBiggerElements(double growthrate){
+        Random random = new Random(100);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
+        testObject.initialize(100,(int) growthrate,random);
+
+        MetamorphicPopulation comparison = new MetamorphicPopulation(support);
+        comparison.initialize(100,((int) growthrate/2),random);
+
+        assertTrue(comparison.getAverageSize() < testObject.getAverageSize());
+    }
+
+    @ParameterizedTest
     @ValueSource(ints = {1,3,10,20,50,100,250})
     public void testInitialize_shouldHaveInitializationSize(int size){
         Random r = new Random(5);

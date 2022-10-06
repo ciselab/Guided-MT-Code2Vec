@@ -77,7 +77,7 @@ public class GeneticAlgorithm {
         }
 
         // Check if fitness is already known, otherwise calculate it
-        for (MetamorphicIndividual i : newPopulation.individuals) {
+        for (MetamorphicIndividual i : newPopulation.getIndividuals()) {
             if (metricCache.getMetricResults(i).isEmpty()) {
                 metricCache.putMetricResults(i, i.inferMetrics());
             }
@@ -171,18 +171,22 @@ public class GeneticAlgorithm {
         // Exit early on empty Pops
         if (pop.getIndividuals().isEmpty())
             return Optional.empty();
-        //TODO: There are big issues when PopulationSize and Element-Amount are not matching!
 
         // Create a tournament population
         MetamorphicPopulation tournament = new MetamorphicPopulation(genotypeSupport, currentGeneration);
-
         Collection<MetamorphicIndividual> pool = config.doTournamentPutBack() ? new ArrayList<>() : new HashSet<>();
+
+        // ShortCut: We do not draw elements double, and we draw more than pop
+        // Just return the fittest of elements
+        if (!config.doTournamentPutBack() && config.getTournamentSize() >= pop.size()){
+               pop.getIndividuals().stream().forEach(tournament::saveIndividual);
+               return tournament.getFittest();
+        }
+
         // For each place in the tournament get a random individual
-        for (int i = 0; i < config.getTournamentSize(); i++) {
+        while (pool.size() < config.getTournamentSize()){
             var candidate = pop.getIndividual(random.nextInt(pop.size())).get();
             pool.add(candidate);
-            //TODO: Sometimes this can lead to an issue where we have 4 elements, draw 4 but in tournament are only 3
-            // It is very late and I cannot wrap my head around how to fix this. For now I just bump test-probability up.
         }
         pool.forEach(tournament::saveIndividual);
 

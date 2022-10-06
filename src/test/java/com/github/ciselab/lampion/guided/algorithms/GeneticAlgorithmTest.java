@@ -477,8 +477,7 @@ public class GeneticAlgorithmTest {
         assertEquals(a,result.get());
     }
 
-    // TODO: This needs to be redone, see note in Tournament-Selection
-    @Ignore
+    @Tag("Regression")
     @Tag("Integration")
     @Test
     public void testTournamentSelection_ThreeElements_ThreeTournamentSize_shouldReturnFittest(){
@@ -507,6 +506,7 @@ public class GeneticAlgorithmTest {
         testPopulation.saveIndividual(b);
         testPopulation.saveIndividual(c);
 
+        config.genetic.setTournamentPutBack(false);
         config.genetic.setTournamentSize(3);
         GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
 
@@ -514,6 +514,47 @@ public class GeneticAlgorithmTest {
 
         assertTrue(result.isPresent());
         assertEquals(a,result.get());
+    }
+
+    @Tag("Probabilistic")
+    @Tag("Seeded")
+    @Tag("Regression")
+    @Tag("Integration")
+    @Test
+    public void testTournamentSelection_ThreeElements_ThreeTournamentSizeWithPutBack_MightNotSeeAllElements(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+        ParetoFront pareto = new ParetoFront(cache);
+
+        MetamorphicIndividual a = new MetamorphicIndividual(support,0);
+        a.populateIndividual(r,3);
+        MetamorphicIndividual b = new MetamorphicIndividual(support,0);
+        b.populateIndividual(r,4);
+        MetamorphicIndividual c = new MetamorphicIndividual(support,0);
+        c.populateIndividual(r,4);
+
+        StubMetric stub = new StubMetric();
+        stub.setWeight(1);
+
+        storeIndividualForCaching(a,cache,stub,0.9);
+        storeIndividualForCaching(b,cache,stub,0.5);
+        storeIndividualForCaching(c,cache,stub,0.4);
+
+        MetamorphicPopulation testPopulation = new MetamorphicPopulation(support);
+        testPopulation.saveIndividual(a);
+        testPopulation.saveIndividual(b);
+        testPopulation.saveIndividual(c);
+
+        config.genetic.setTournamentPutBack(true);
+        config.genetic.setTournamentSize(3);
+        GeneticAlgorithm ga = new GeneticAlgorithm(config.genetic,cache,support,pareto,r);
+
+        var result = ga.tournamentSelection(testPopulation,r);
+
+        assertTrue(result.isPresent());
+        assertEquals(b,result.get());
     }
 
     @Tag("Integration")
