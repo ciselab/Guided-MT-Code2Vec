@@ -46,7 +46,6 @@ def run(
         experiment_dir =  os.path.join(output_dir_grid_experiment,experiment['metric']+"-"+experiment['modifier'])
         print(f"Filling {experiment_dir} ...")
         os.makedirs(experiment_dir, exist_ok=True)
-
         config_file_path = os.path.join(experiment_dir,experiment["properties_file"])
         config_file = open(config_file_path, "w")
         config_content = config_template.render(**experiment,**genetic_configuration)

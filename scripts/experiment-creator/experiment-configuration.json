@@ -1,4 +1,6 @@
 {
+    "Guided-MT-Code2Vec-version":"2022-autumn-submission",
+
     "experiments":[
         {
             "metric": "F1",
@@ -123,13 +125,14 @@
 
     "genetic_configuration": {
         "crossover_rate": 0.7,
-        "elitism_rate": 0.3,
-        "mutation_rate": 0.4,
-        "increase_rate:": 0.7,
+        "mutation_rate": 0.5,
+        "increase_rate": 0.8,
 
-        "max_gene_length": 20,
+        "max_gene_length": 30,
         "population_size": 10,
         "tournament_size": 4,
-        "max_steady_generations": 2
+        "max_steady_generations": 4,
+
+        "max_time":300
     }
 }

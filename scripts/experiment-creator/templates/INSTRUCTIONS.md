@@ -63,3 +63,8 @@ The expected Docker image is `ciselab/guided-mt-code2vec`.
 Follow the instructions in [the github repository](https://github.com/ciselab/Guided-MT-Code2Vec) to obtain it.
 
 The default for the experiment is `latest` but the replication package will have one specified.
+
+## Models
+
+At the moment, things are a bit hardcoded for the `saved_model_iter8.release` model. 
+It could happen that you have to adjust the code2vec-touching code to move to different models. 

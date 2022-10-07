@@ -16,11 +16,12 @@ pred_length_weight::double[-1,1]
 trans_num_weight::double[-1,1]
 modifier::[min,max} 
 use_genetic_algorithm::bool (false_>random,true_>ga)
+max_time::int[>1] 
 macro_seed::int
 crossover_rate::double[0,1]
-elitism_rate::double[0,1]
 mutation_rate::double[0,1]
 increase_rate::double[0,1]
+growth_rate::double[>=1.0]
 max_gene_length::int[>=1]
 population_size::int[>=1]
 tournament_size::int[>=1]
@@ -36,16 +37,20 @@ useGA={{use_genetic_algorithm|default(true,true)}}
 # -1 means a new seed is created on startup
 seed={{macro_seed|default(-1,true)}}
 
+# Time until Termination - in Minutes
+maxtime={{max_time|default(480,true)}}
+
 # ===== GENETIC ATTRIBUTES =====
+# ** Ignored for Random Search **
 
 # How likely is a crossover to appear?
 crossoverrate={{crossover_rate|default(0.7,true)}}
-# How many of the "best individuals" fast-pass tournament? CURRENTLY NOT IMPLEMENTED
-elitismrate={{elitism_rate|default(0.3,true)}}
 # How likely is any single individual to mutate?
 mutationrate={{mutation_rate|default(0.4,true)}}
 # In case of mutation, how many % will grow? (1-increasrate will shrink)
 increaserate={{increase_rate|default(0.7,true)}}
+# In case of increase, how many elements are added on average?
+growthfactor={{growth_rate|default(3.0,true)}}
 
 # Upper Limit for Gene-Length
 maxgenelength={{max_gene_length|default(20,true)}}
@@ -54,7 +59,7 @@ populationsize={{population_size|default(10,true)}}
 # How many individuals compete in one tournament
 tournamentsize={{tournament_size|default(4,true)}}
 # After how many unchanged generations do we abort early
-maxsteadygenerations={{max_steady_generations|default(2,true)}}
+maxsteadygenerations={{max_steady_generations|default(4,true)}}
 
 # ===== METRIC ATTRIBUTES =====
 
@@ -80,7 +85,7 @@ bash=/bin/bash
 # ===== OTHER ATTRIBUTES =====
 
 # currently supported: global, perMethod, perClass, perClassEach, perMethodEach (Spelling is important!).
-transformationscope=global
+transformationscope=perClassEach
 
 # Whether or not all Comments will be removed before pretty printing
 # Does not infer with any transformations, but maybe removes them
