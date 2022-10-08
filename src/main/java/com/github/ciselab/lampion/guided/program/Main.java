@@ -94,6 +94,7 @@ public class Main {
     public static void runRandomAlgo() {
         RandomAlgorithm algorithm = new RandomAlgorithm(genotypeSupport, paretoFront);
         RandomGenerator randomGenerator = new SplittableRandom(config.program.getSeed());
+        algorithm.initializeParameters(randomGenerator);
         logger.info("Using Random-Search");
 
         // Create an initial population
@@ -191,7 +192,6 @@ public class Main {
             int steadyGens = 0;
             int averageSizeSum = 0;
             while (!converged && timeDiffSmaller(start)) {
-
                 generationCount++;
                 logger.info("Starting Generation " + generationCount);
                 resultWriter.write("Generation " + generationCount + " has an average population size" +

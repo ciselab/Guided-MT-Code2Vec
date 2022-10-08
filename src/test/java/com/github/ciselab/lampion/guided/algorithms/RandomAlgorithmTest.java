@@ -1,6 +1,8 @@
 package com.github.ciselab.lampion.guided.algorithms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.github.ciselab.lampion.guided.algorithms.RandomAlgorithm;
 import com.github.ciselab.lampion.guided.configuration.Configuration;
 import com.github.ciselab.lampion.guided.support.FileManagement;
@@ -9,6 +11,7 @@ import com.github.ciselab.lampion.guided.support.MetricCache;
 import com.github.ciselab.lampion.guided.support.ParetoFront;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -109,4 +112,22 @@ public class RandomAlgorithmTest {
 
         assertEquals(outputPop1.getIndividuals(),outputPop2.getIndividuals());
     }
+
+    @Tag("Regression")
+    @Test
+    public void testNextGeneration_WithoutInitialize_throwsException(){
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        Random r = new Random(5);
+        var inputPop = new MetamorphicPopulation(support);
+        inputPop.initialize(10,10,r);
+
+        RandomGenerator random1 = new Random(100);
+        var testObject = new RandomAlgorithm(support, new ParetoFront(cache));
+
+        assertThrows(NullPointerException.class, () ->  testObject.nextGeneration(inputPop));
+    }
+
 }
