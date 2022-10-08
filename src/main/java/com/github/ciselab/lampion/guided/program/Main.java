@@ -317,6 +317,10 @@ public class Main {
      * @return whether the population is fitter.
      */
     public static boolean isFitter(MetamorphicPopulation pop, double best) {
+        // If the population is empty, it cannot be fitter.
+        if (pop.getIndividuals().isEmpty())
+                return false;
+
         if (cache.doMaximize()) {
             return pop.getFittest().get().getFitness() > best;
         } else {
@@ -343,6 +347,9 @@ public class Main {
      * @return the median of the list.
      */
     public static double getMedianForLog(ArrayList<Double> values) {
+        if (values.isEmpty())
+            return 0.0;
+
         Collections.sort(values);
         if (values.size() % 2 == 1)
             return values.get((values.size() + 1) / 2 - 1);
@@ -361,6 +368,9 @@ public class Main {
      * @return the average of the list.
      */
     public static double getAverageForLog(ArrayList<Double> values) {
+        if (values.isEmpty())
+            return 0.0;
+
         double sum = 0;
         for (double i : values) {
             sum += i;
@@ -375,6 +385,9 @@ public class Main {
      * @return the worst value.
      */
     public static double getWorstForLog(ArrayList<Double> values) {
+        if (values.isEmpty())
+            return 0.0;
+
         Collections.sort(values);
         if (cache.doMaximize())
             return values.get(0);
@@ -389,6 +402,9 @@ public class Main {
      * @return the best value.
      */
     public static double getBestForLog(ArrayList<Double> values) {
+        if (values.isEmpty())
+            return 0.0;
+
         Collections.sort(values);
         if (cache.doMaximize())
             return values.get(values.size() - 1);

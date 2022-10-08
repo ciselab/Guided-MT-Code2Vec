@@ -2,7 +2,6 @@ package com.github.ciselab.lampion.guided.algorithms;
 
 import com.github.ciselab.lampion.guided.configuration.GeneticConfiguration;
 import com.github.ciselab.lampion.guided.support.GenotypeSupport;
-import com.github.ciselab.lampion.guided.support.MetricCache;
 import com.github.ciselab.lampion.guided.support.ParetoFront;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
