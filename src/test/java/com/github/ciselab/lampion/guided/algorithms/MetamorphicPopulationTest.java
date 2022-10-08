@@ -974,4 +974,32 @@ public class MetamorphicPopulationTest {
         assertThrows(IllegalArgumentException.class, () -> testObject.initialize(-1,r));
     }
 
+    @Tag("Regression")
+    @Test
+    public void testGetAverageSize_emptyPopulation_shouldGive0(){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
+
+        assertEquals(0.0,testObject.getAverageSize(),0.0001);
+    }
+
+    @Tag("Probabilistic")
+    @Tag("Regression")
+    @ParameterizedTest
+    @ValueSource(doubles = {3.0,5.0,7.0})
+    public void testGetAverageSize_initializedPopulation_shouldHaveAverageSize(double growth){
+        Random r = new Random(5);
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
+        testObject.initialize(100, (int) growth,r);
+
+        assertTrue(testObject.getAverageSize()>1);
+    }
 }

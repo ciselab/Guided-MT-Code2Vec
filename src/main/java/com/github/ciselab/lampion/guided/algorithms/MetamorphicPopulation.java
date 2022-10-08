@@ -61,12 +61,10 @@ public class MetamorphicPopulation {
      *
      * @return the average size.
      */
-    public int getAverageSize() {
-        int sum = 0;
-        for (MetamorphicIndividual i : individuals) {
-            sum += i.getLength();
-        }
-        return sum / individuals.size();
+    public double getAverageSize() {
+        return individuals.stream()
+                .mapToDouble(MetamorphicIndividual::getLength)
+                .average().orElse(0.0);
     }
 
     /**
