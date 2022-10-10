@@ -219,7 +219,7 @@ public class GenotypeSupport {
 
         long diff = (System.currentTimeMillis() - start) / 1000;
         totalCode2vecTime += diff;
-        logger.info("Code2vec inference of this generation took: " + diff + " seconds");
+        logger.info("Code2vec inference of individual took: " + diff + " seconds");
 
         Path resolvedDestination = Path.of(destination);
 

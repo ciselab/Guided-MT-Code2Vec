@@ -1,8 +1,5 @@
 package com.github.ciselab.lampion.guided.algorithms;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.github.ciselab.lampion.guided.algorithms.RandomAlgorithm;
 import com.github.ciselab.lampion.guided.configuration.Configuration;
 import com.github.ciselab.lampion.guided.support.FileManagement;
@@ -16,9 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.SplittableRandom;
+import java.util.function.Function;
 import java.util.random.RandomGenerator;
+import java.util.stream.IntStream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RandomAlgorithmTest {
 
@@ -86,6 +89,66 @@ public class RandomAlgorithmTest {
         var outputPop = testObject.nextGeneration(inputPop);
 
         assertEquals(1,outputPop.getGeneration());
+    }
+
+
+    @Tag("Regression")
+    @Test
+    public void testNextPop_SizeIsIncreased(){
+        // We had an issue with termination
+        // Note: Due to stochastic processes, it can be that not every gen is bigger than the one before.
+        // But it should be like that on average. Hence, we check 50 gens for this behaviour
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        Random r = new Random(5);
+        var lastpop = new MetamorphicPopulation(support);
+        lastpop.initialize(10,10,r);
+
+        var testObject = new RandomAlgorithm(support, new ParetoFront(cache));
+        testObject.initializeParameters(r);
+
+        List<Double> diffs = new ArrayList<>();
+
+        for(int i=0;i<50;i++) {
+            var nextPop = testObject.nextGeneration(lastpop);
+
+            diffs.add(nextPop.getAverageSize() - lastpop.getAverageSize());
+
+            lastpop = nextPop;
+        }
+
+        double totalDiff = diffs.stream().mapToDouble(x -> x).sum();
+        assertTrue(totalDiff > 0);
+    }
+
+
+    @Tag("Regression")
+    @ParameterizedTest
+    @ValueSource(ints = {1,5,10,30})
+    public void testNextPop_PopulationSizeStaysSame(int POPULATIONSIZE){
+        // We had an issue that the generations doubled in size
+
+        var config = new Configuration();
+        MetricCache cache = new MetricCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        Random r = new Random(5);
+        var lastpop = new MetamorphicPopulation(support);
+        lastpop.initialize(POPULATIONSIZE,10,r);
+
+        RandomGenerator random1 = new Random(100);
+        var testObject = new RandomAlgorithm(support, new ParetoFront(cache));
+        testObject.initializeParameters(random1);
+
+        for(int i=0;i<10;i++) {
+            var nextPop = testObject.nextGeneration(lastpop);
+
+            assertEquals(POPULATIONSIZE,nextPop.getIndividuals().size());
+            assertEquals(lastpop.getIndividuals().size(),nextPop.getIndividuals().size());
+            lastpop = nextPop;
+        }
     }
 
     @ParameterizedTest

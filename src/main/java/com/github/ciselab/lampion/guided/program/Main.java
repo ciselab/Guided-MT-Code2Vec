@@ -115,7 +115,7 @@ public class Main {
             ArrayList<Double> fitnesses = new ArrayList<>();
 
             int generationCount = 0;
-            while (myPop.getAverageSize() <= config.genetic.getMaxGeneLength() && timeDiffSmaller(start)) {
+            while (generationCount <= config.genetic.getMaxGeneLength() && timeDiffSmaller(start)) {
                 ArrayList<Double> generationFitness = new ArrayList<>();
                 for (int i = 0; i < config.genetic.getPopSize(); i++) {
                     generationFitness.add(myPop.getIndividual(i).get().getFitness());

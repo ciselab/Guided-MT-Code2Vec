@@ -50,7 +50,7 @@ public class MetamorphicPopulation {
         }
         for (int i = 0; i < populationSize; i++) {
             MetamorphicIndividual individual = new MetamorphicIndividual(genotypeSupport, generation);
-            int transformations = randomGenerator.nextInt(1,growthFactor);
+            int transformations = growthFactor > 1 ? randomGenerator.nextInt(1,growthFactor) : 1;
             individual.populateIndividual(randomGenerator, transformations);
             saveIndividual(individual);
         }

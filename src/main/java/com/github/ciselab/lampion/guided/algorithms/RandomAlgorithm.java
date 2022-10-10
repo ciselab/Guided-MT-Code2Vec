@@ -30,18 +30,12 @@ public class RandomAlgorithm {
     }
 
     public MetamorphicPopulation nextGeneration(MetamorphicPopulation pop) {
-        int newLength = pop.getIndividual(0).get().getLength() + 1;
         currentGeneration += 1;
-        logger.debug("Creating a new population of length " + newLength + " through the random algorithm.");
+        logger.debug("Creating a new population of length " + currentGeneration + " through the random algorithm.");
         MetamorphicPopulation newPop =
                 new MetamorphicPopulation(genotypeSupport, currentGeneration);
-        newPop.initialize(pop.size(),randomGenerator);
-        for (int i = 0; i < pop.size(); i++) {
-            MetamorphicIndividual newIndiv = new MetamorphicIndividual(genotypeSupport, currentGeneration);
-            newIndiv.populateIndividual(randomGenerator, newLength);
-            newPop.saveIndividual(newIndiv);
-        }
 
+        newPop.initialize(pop.size(), currentGeneration,randomGenerator);
         return newPop;
     }
 

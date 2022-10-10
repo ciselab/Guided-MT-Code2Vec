@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -985,6 +986,24 @@ public class MetamorphicPopulationTest {
         MetamorphicPopulation testObject = new MetamorphicPopulation(support);
 
         assertEquals(0.0,testObject.getAverageSize(),0.0001);
+    }
+
+    @Tag("Regression")
+    @RepeatedTest(3)
+    public void testInitialize_withGrowthFactor1_shouldNotThrowError(){
+        // There was an issue that we cannot use GrowthFactor 1, as that would mess with math.nextint(1,1)
+        // So we just treat it as 1 in that case
+        Random random = new Random();
+        assertThrows(Exception.class, () -> random.nextInt(1,1));
+
+        var config = new Configuration();
+        MetricCache cache = makeEmptyCache();
+        GenotypeSupport support = new GenotypeSupport(cache,config);
+
+        MetamorphicPopulation testObject = new MetamorphicPopulation(support);
+        testObject.initialize(10,1,random);
+
+        assertEquals(1.0, testObject.getAverageSize(),0.001);
     }
 
     @Tag("Probabilistic")
