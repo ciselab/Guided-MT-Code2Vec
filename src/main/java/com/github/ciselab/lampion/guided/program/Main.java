@@ -50,7 +50,7 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException, IOException {
         logger.info("Guided-MT started");
 
-        // For processing it is important to always have the same format (e.g. 1.00 instead of 1,00)
+        // For processing, it is important to always have the same format (e.g. 1.00 instead of 1,00)
         // While we specify them later extra, we set them here too as a safety net.
         Locale.setDefault(new Locale("UK"));
 
@@ -96,6 +96,7 @@ public class Main {
         RandomGenerator randomGenerator = new SplittableRandom(config.program.getSeed());
         algorithm.initializeParameters(randomGenerator);
         logger.info("Using Random-Search");
+        LocalTime start = LocalTime.now();
 
         // Create an initial population
         try {
@@ -114,7 +115,7 @@ public class Main {
             ArrayList<Double> fitnesses = new ArrayList<>();
 
             int generationCount = 0;
-            while (myPop.getAverageSize() <= config.genetic.getMaxGeneLength()) {
+            while (myPop.getAverageSize() <= config.genetic.getMaxGeneLength() && timeDiffSmaller(start)) {
                 ArrayList<Double> generationFitness = new ArrayList<>();
                 for (int i = 0; i < config.genetic.getPopSize(); i++) {
                     generationFitness.add(myPop.getIndividual(i).get().getFitness());
@@ -146,6 +147,11 @@ public class Main {
                 resultWriter.write("Population of generation " + generationCount + " = " + myPop +
                         "\n");
             }
+            if (myPop.getAverageSize() >= config.genetic.getMaxGeneLength())
+                logger.info("Terminated because max gene size reached.");
+            else
+                logger.info("Terminated because total minutes reached max.");
+
             logger.info("Program finished");
             // Report best, worst, average median
             resultWriter.write("At the end of the algorithm the results are: , best: " + getBestForLog(fitnesses) + ", worst: " + getWorstForLog(fitnesses) + ", " +
@@ -184,8 +190,6 @@ public class Main {
             MetamorphicIndividual best = new MetamorphicIndividual(genotypeSupport, -1);
             best.setJavaPath(Path.of(config.program.getDataDirectoryPath().toString(), genotypeSupport.getInitialDataset()).toString());
             double bestFitness = writeInitialPopulationResults(resultWriter, myPop, best);
-            //if(dataPointSpecific)
-            //    writeDataSpecificResults(resultWriter, best);
 
             // Evolve our population until we reach an optimum solution
             int generationCount = 0;
@@ -417,7 +421,7 @@ public class Main {
      *
      * @param config
      */
-    public static void setConfig(Configuration config) {
+    protected static void setConfig(Configuration config) {
         Main.config = config;
     }
 
@@ -426,7 +430,7 @@ public class Main {
      *
      * @param cache
      */
-    public static void setCache(MetricCache cache) {
+    protected static void setCache(MetricCache cache) {
         Main.cache = cache;
     }
 }
