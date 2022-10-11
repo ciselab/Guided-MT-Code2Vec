@@ -216,11 +216,21 @@ public class Main {
                     logger.debug("Current Pareto set = " + paretoFront.displayPareto());
                 }
 
-                resultWriter.write("Generation: " + generationCount + ", result: " + myPop.getFittest().get().getFitness() + "\n");
-                resultWriter.write("Gene: " + myPop.getFittest() + "\n");
+                resultWriter.write("Generation: " + generationCount + "\n");
+                logger.info("Finished Generation " + generationCount);
+                if (myPop.getFittest().isPresent()){
+                    resultWriter.write("fittest fitness: " + myPop.getFittest().get().getFitness() + "\n");
+                    resultWriter.write("Gene: " + myPop.getFittest() + "\n");
 
-                logger.info("Generation: " + generationCount + " Fittest: " + myPop.getFittest().get().getFitness());
-                logger.debug("Fittest Gene: " + myPop.getFittest().toString());
+                    logger.info("Fittest: " + myPop.getFittest().get().getFitness());
+                    logger.debug("Fittest Gene: " + myPop.getFittest().toString());
+                } else {
+                    logger.warn("Generation " + generationCount +
+                            " had no fittest element, Population had " + myPop.getIndividuals().size() +
+                            " elements with " + myPop.getAverageSize() + " average transformations");
+                }
+
+
 
                 // Write all current individuals to their respective json files
                 myPop.getIndividuals().stream().forEach(MetamorphicIndividual::writeIndividualJSON);
