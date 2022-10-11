@@ -236,6 +236,7 @@ public class Main {
                 myPop.getIndividuals().stream().forEach(MetamorphicIndividual::writeIndividualJSON);
 
                 myPop = geneticAlgorithm.evolvePopulation(myPop);
+
                 logger.debug("Population of generation " + generationCount + " = " + myPop);
                 resultWriter.write("Population of generation " + generationCount + " = " + myPop +
                         "\n");

@@ -43,7 +43,7 @@ public class GeneticAlgorithm {
      * @return the new metamorphic population
      */
     public MetamorphicPopulation evolvePopulation(MetamorphicPopulation pop) {
-        logger.debug("Evolve the old population");
+        logger.debug("Getting next Generation from Genetic Algorithm");
         currentGeneration += 1;
         MetamorphicPopulation newPopulation =
                 new MetamorphicPopulation(genotypeSupport, currentGeneration);
@@ -51,7 +51,7 @@ public class GeneticAlgorithm {
         // Loop over the population size and create new individuals with
         // crossover
         int index = 0;
-        while (index < newPopulation.size()) {
+        while (index < config.getPopSize()) {
             MetamorphicIndividual individual1 = tournamentSelection(pop, randomGenerator).get();
             MetamorphicIndividual individual2 = tournamentSelection(pop, randomGenerator).get();
             List<MetamorphicIndividual> newIndividuals = crossover(individual1, individual2, randomGenerator);
