@@ -110,7 +110,7 @@ public class Main {
             }
             MetamorphicIndividual initial = new MetamorphicIndividual(genotypeSupport, -1);
             initial.setJavaPath(Path.of(config.program.getDataDirectoryPath().toString(), genotypeSupport.getInitialDataset()).toString());
-            writeInitialPopulationResults(resultWriter, myPop, initial);
+            double initialFitness = writeInitialPopulationResults(resultWriter, myPop, initial);
 
             ArrayList<Double> fitnesses = new ArrayList<>();
 
@@ -134,8 +134,11 @@ public class Main {
                         ", average: " + getAverageForLog(generationFitness) + ", median: " + getMedianForLog(generationFitness) + "\n");
 
 
-                logger.info("Generation: " + generationCount + " Fittest: " + myPop.getFittest().get().getFitness() + " Gene:");
-                logger.info(myPop.getFittest().toString());
+                logger.info("Random Generation " + generationCount + " finished");
+                double gene_fitness = myPop.getFittest().get().getFitness();
+                logger.info("Fittest: " + gene_fitness  + " (+/- " + Math.abs(gene_fitness-initialFitness)+")");
+
+                logger.debug("Fittest Gene: " + myPop.getFittest().toString());
 
                 // Write all current individuals to their respective json files
                 for (var individual : myPop.getIndividuals()) {
@@ -191,6 +194,7 @@ public class Main {
             best.setJavaPath(Path.of(config.program.getDataDirectoryPath().toString(), genotypeSupport.getInitialDataset()).toString());
             double bestFitness = writeInitialPopulationResults(resultWriter, myPop, best);
 
+            double initialFitness = bestFitness;
             // Evolve our population until we reach an optimum solution
             int generationCount = 0;
             int steadyGens = 0;
@@ -222,7 +226,8 @@ public class Main {
                     resultWriter.write("fittest fitness: " + myPop.getFittest().get().getFitness() + "\n");
                     resultWriter.write("Gene: " + myPop.getFittest() + "\n");
 
-                    logger.info("Fittest: " + myPop.getFittest().get().getFitness());
+                    double gene_fitness = myPop.getFittest().get().getFitness();
+                    logger.info("Fittest: " + gene_fitness  + " (+/- " + Math.abs(gene_fitness-initialFitness)+")");
                     logger.debug("Fittest Gene: " + myPop.getFittest().toString());
                 } else {
                     logger.warn("Generation " + generationCount +

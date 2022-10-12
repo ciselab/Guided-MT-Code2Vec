@@ -137,8 +137,7 @@ public class Engine {
                 results.add(result);
 
                 if (result != null && !result.equals(new EmptyTransformationResult())) {
-                    // As we removed the Manifest (for now?) we just log a debug statement of what was done
-                    logger.debug("Successfully applied " + result.getTransformationName() +
+                    logger.trace("Successfully applied " + result.getTransformationName() +
                             " to Element(Hash):" + result.getTransformedElement().toString().hashCode());
                 } else if (result != null && result.equals(new EmptyTransformationResult())) {
                     logger.debug(transformer + " was not successfully applied.");
@@ -156,12 +155,12 @@ public class Engine {
         // classes.stream().forEach(c -> c.updateAllParentsBelow());
 
         Instant endOfTransformations = Instant.now();
-        logger.info("Applying the Transformations took "
+        logger.info("Applying the " + results.size() + " Transformations took "
                 + Duration.between(startOfEngine, endOfTransformations) + " seconds");
         if (results.stream().filter(u -> u.equals(new EmptyTransformationResult())).count() > 0) {
-            logger.info("Of the " + results.size() + " Transformations applied, "
+            logger.debug("Of the " + results.size() + " Transformations applied, "
                     + results.stream().filter(u -> u.equals(new EmptyTransformationResult())).count() + " where malformed");
-            logger.info(transformationFailures + " transformations produced (Spoon-)errors");
+            logger.debug(transformationFailures + " transformations produced (Spoon-)errors");
         }
         // Step 2.4:
         // If enabled, remove all comments (by setting them invisible)
