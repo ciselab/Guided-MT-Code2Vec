@@ -116,6 +116,7 @@ public class Main {
 
             int generationCount = 0;
             while (generationCount <= config.genetic.getMaxGeneLength() && timeDiffSmaller(start)) {
+                LocalTime generationStart = LocalTime.now();
                 ArrayList<Double> generationFitness = new ArrayList<>();
                 for (int i = 0; i < config.genetic.getPopSize(); i++) {
                     generationFitness.add(myPop.getIndividual(i).get().getFitness());
@@ -128,25 +129,15 @@ public class Main {
                         " of " + myPop.getAverageSize() + "\n");
 
                 algorithm.checkPareto(myPop);
-                logger.debug("Current Pareto set = " + paretoFront.displayPareto());
-
-                resultWriter.write("Generation: " + generationCount + ", best: " + getBestForLog(generationFitness) + ", worst: " + getWorstForLog(generationFitness) +
-                        ", average: " + getAverageForLog(generationFitness) + ", median: " + getMedianForLog(generationFitness) + "\n");
-
-
-                logger.info("Random Generation " + generationCount + " finished");
-                double gene_fitness = myPop.getFittest().get().getFitness();
-                logger.info("Fittest: " + gene_fitness  + " (+/- " + Math.abs(gene_fitness-initialFitness)+")");
-
-                logger.debug("Fittest Gene: " + myPop.getFittest().toString());
-
                 // Write all current individuals to their respective json files
                 for (var individual : myPop.getIndividuals()) {
                     individual.writeIndividualJSON();
                 }
 
                 myPop = algorithm.nextGeneration(myPop);
-                logger.debug("Population of generation " + generationCount + " = " + myPop);
+                LocalTime generationFinished = LocalTime.now();
+
+                logGenerationInfo(myPop,generationCount,initialFitness,generationStart,generationFinished);
                 resultWriter.write("Population of generation " + generationCount + " = " + myPop +
                         "\n");
             }
@@ -200,6 +191,7 @@ public class Main {
             int steadyGens = 0;
             int averageSizeSum = 0;
             while (!converged && timeDiffSmaller(start)) {
+                LocalTime generationStart = LocalTime.now();
                 generationCount++;
                 logger.info("Starting Generation " + generationCount);
                 resultWriter.write("Generation " + generationCount + " has an average population size" +
@@ -219,30 +211,14 @@ public class Main {
                 } else {
                     logger.debug("Current Pareto set = " + paretoFront.displayPareto());
                 }
-
-                resultWriter.write("Generation: " + generationCount + "\n");
-                logger.info("Finished Generation " + generationCount);
-                if (myPop.getFittest().isPresent()){
-                    resultWriter.write("fittest fitness: " + myPop.getFittest().get().getFitness() + "\n");
-                    resultWriter.write("Gene: " + myPop.getFittest() + "\n");
-
-                    double gene_fitness = myPop.getFittest().get().getFitness();
-                    logger.info("Fittest: " + gene_fitness  + " (+/- " + Math.abs(gene_fitness-initialFitness)+")");
-                    logger.debug("Fittest Gene: " + myPop.getFittest().toString());
-                } else {
-                    logger.warn("Generation " + generationCount +
-                            " had no fittest element, Population had " + myPop.getIndividuals().size() +
-                            " elements with " + myPop.getAverageSize() + " average transformations");
-                }
-
-
-
                 // Write all current individuals to their respective json files
                 myPop.getIndividuals().stream().forEach(MetamorphicIndividual::writeIndividualJSON);
 
                 myPop = geneticAlgorithm.evolvePopulation(myPop);
 
-                logger.debug("Population of generation " + generationCount + " = " + myPop);
+                var generationFinished = LocalTime.now();
+                logGenerationInfo(myPop,generationCount,initialFitness,generationStart,generationFinished);
+
                 resultWriter.write("Population of generation " + generationCount + " = " + myPop +
                         "\n");
             }
@@ -271,6 +247,24 @@ public class Main {
         }
     }
 
+    static private void logGenerationInfo(MetamorphicPopulation pop, int generation, double initialFitness, LocalTime start, LocalTime end){
+        logger.info("Generation " + generation + " finished");
+        if (pop.getFittest().isPresent()){
+
+            double gene_fitness = pop.getFittest().get().getFitness();
+            logger.info("Fittest: " + pop.getFittest().get().hexHash() + " with " + gene_fitness  + " (+/- " + Math.abs(gene_fitness-initialFitness)+")");
+
+            logger.debug("Fittest Gene: " + pop.getFittest().toString());
+        } else {
+            logger.warn("Generation " + generation +
+                    " had no fittest element, Population had " + pop.getIndividuals().size() +
+                    " elements with " + pop.getAverageSize() + " average transformations");
+        }
+
+        logger.debug("Population of generation " + generation + " = " + pop.toString());
+
+    }
+
     /**
      * Write everything we need to know about the initial population and the initial individual in it.
      *
@@ -286,7 +280,6 @@ public class Main {
         resultWriter.write("Initial population: " + myPop + "\n");
         logger.info("Initial fitness without transformations: " + bestFitness);
         resultWriter.write("Initial fitness without transformations: " + bestFitness + "\n");
-        //logger.info("The metric results corresponding to the transformations are: " + Arrays.toString(best.getMetrics()));
 
         // check best against pareto
         paretoFront.addToParetoOptimum(best);
@@ -313,21 +306,6 @@ public class Main {
         int transitionMin = (int) ((transitionTime / 60) % 60);
         resultWriter.write("Total time spent on Transformation operations was " + transitionMin + " minutes and " + transitionSec + " seconds." + "\n");
     }
-
-    /**
-     * Write the data specific scores to the result file for each metric.
-     * @param resultWriter the file writer with which we can write the results.
-     * @param individual the individual for which we want to write the results.
-     * @throws IOException exception when the program can't access the file.
-
-    private static void writeDataSpecificResults(FileWriter resultWriter, MetamorphicIndividual individual) throws IOException {
-    Map<String, List<Float>> scores = individual.getScoresList();
-    for(String metric: scores.keySet()) {
-    String results = "{" + metric + ": " + Arrays.toString(scores.get(metric).toArray()) + "}";
-    resultWriter.write(results + '\n');
-    }
-    }
-     */
 
     /**
      * Determine whether a population is fitter than the current best.
