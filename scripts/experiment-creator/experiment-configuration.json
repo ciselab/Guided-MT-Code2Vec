@@ -98,24 +98,7 @@
             "mrr_weight":-1,
             "modifier": "max",
             "properties_file": "f1-mrr-min.properties"
-        },
-        {
-            "metric": "random-pareto-MRR-trans",
-            "use_genetic_algorithm": "false",
-            "trans_num_weight": 1,
-            "mrr_weight":1,
-            "modifier": "min",
-            "properties_file": "mrr-trans-min.properties"
-        },
-        {
-            "metric": "random-pareto-F1-trans",
-            "use_genetic_algorithm": "false",
-            "trans_num_weight": 1,
-            "f1_weight":1,
-            "modifier": "min",
-            "properties_file": "f1-trans-min.properties"
         }
-
     ],
 
     "seeds":[
@@ -128,11 +111,11 @@
         "mutation_rate": 0.5,
         "increase_rate": 0.8,
 
-        "max_gene_length": 30,
-        "population_size": 10,
+        "max_gene_length": 25,
+        "population_size": 20,
         "tournament_size": 4,
-        "max_steady_generations": 4,
+        "max_steady_generations": 8,
 
-        "max_time":300
+        "max_time":360
     }
 }

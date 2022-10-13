@@ -65,12 +65,18 @@ def run(
 
 def copy_other_files(target_dir: str, config_file_path: str = None) -> None:
     path_to_runner_file = "templates/runner.sh"
+    path_to_extractor_file = "templates/extractor.sh"
     path_to_instructions_file = "templates/INSTRUCTIONS.md"
 
     if os.path.exists(path_to_runner_file) and os.path.isfile(path_to_runner_file):
         shutil.copyfile(src=path_to_runner_file, dst=os.path.join(target_dir, "runner.sh"))
     else:
         print("Did not find the runner file nearby - not packaging it")
+
+    if os.path.exists(path_to_extractor_file) and os.path.isfile(path_to_extractor_file):
+        shutil.copyfile(src=path_to_extractor_file, dst=os.path.join(target_dir, "extractor.sh"))
+    else:
+        print("Did not find the extractor file nearby - not packaging it")
 
     if os.path.exists(path_to_instructions_file) and os.path.isfile(path_to_instructions_file):
         shutil.copyfile(src=path_to_instructions_file, dst=os.path.join(target_dir, "INSTRUCTIONS.md"))
