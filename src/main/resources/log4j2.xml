@@ -2,7 +2,7 @@
 <Configuration status="INFO">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss} %-2level %logger{36} - %msg%n" />
+            <PatternLayout pattern="%d{HH:mm:ss} %-2level %logger{16} - %msg%n" />
         </Console>
         <File name="File" fileName="guided-mt-code2vec.log" immediateFlush="false" append="false">
             <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss} %-3level %logger{36} - %msg%n"/>

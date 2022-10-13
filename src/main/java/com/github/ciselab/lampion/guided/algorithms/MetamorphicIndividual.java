@@ -211,6 +211,7 @@ public class MetamorphicIndividual {
                 setJavaPath(genotypeSupport.runTransformations(this, genotypeSupport.getInitialDataset()));
             String destination = javaPath.get() + "/results/";
 
+            logger.info("Starting Code2Vec Inference for " + this.hexHash());
             String resultDirectory =
                     genotypeSupport.runCode2vec(this.javaPath.get(), destination);
             this.setResultPath(resultDirectory);

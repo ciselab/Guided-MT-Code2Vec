@@ -118,7 +118,7 @@ public class Engine {
                     numberOfTransformationsPerScope * codeRoot.filterChildren(c -> c instanceof CtClass).list().size();
             default -> 0;
         };
-        logger.info("Applying " + totalTransformationsToDo + " Transformations evenly distributed amongst all classes");
+        logger.debug("Applying " + totalTransformationsToDo + " Transformations evenly distributed amongst all classes");
 
         // Step 2.2:
         // For every to-be-applied transformation
@@ -155,8 +155,7 @@ public class Engine {
         // classes.stream().forEach(c -> c.updateAllParentsBelow());
 
         Instant endOfTransformations = Instant.now();
-        logger.info("Applying the " + results.size() + " Transformations took "
-                + Duration.between(startOfEngine, endOfTransformations) + " seconds");
+        logger.info(String.format("Applying %d Transformations took %d ",results.size(),Duration.between(startOfEngine, endOfTransformations).toSeconds()));
         if (results.stream().filter(u -> u.equals(new EmptyTransformationResult())).count() > 0) {
             logger.debug("Of the " + results.size() + " Transformations applied, "
                     + results.stream().filter(u -> u.equals(new EmptyTransformationResult())).count() + " where malformed");
@@ -173,7 +172,7 @@ public class Engine {
                 for (var c : classes) {
                     TransformationResult removeCommentResult = commentRemover.applyAtRandom(c);
                     results.add(removeCommentResult);
-                    logger.info("Removed all Comments from the Java Output files");
+                    logger.debug("Removed all Comments from the Java Output files");
                 }
             } catch (SpoonException spoonException) {
                 logger.error("Received a SpoonException while removing comments", spoonException);

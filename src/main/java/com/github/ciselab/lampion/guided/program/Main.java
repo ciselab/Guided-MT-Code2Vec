@@ -169,7 +169,7 @@ public class Main {
             MetamorphicIndividual best = new MetamorphicIndividual(genotypeSupport, -1);
             best.setJavaPath(Path.of(config.program.getDataDirectoryPath().toString(), genotypeSupport.getInitialDataset()).toString());
             double bestFitness = best.getFitness();
-            logger.info("Initial (best) fitness without transformations: " + bestFitness);
+            logger.info(String.format("Initial (best) fitness without transformations: %.4f",bestFitness));
             double initialFitness = bestFitness;
 
             // Evolve our population until we reach an optimum solution
@@ -216,11 +216,12 @@ public class Main {
     }
 
     static private void logGenerationInfo(MetamorphicPopulation pop, int generation, double initialFitness, LocalTime start, LocalTime end){
-        logger.info("Generation " + generation + " finished");
+        logger.info("Generation " + generation + " finished after " + Duration.between(start, end).getSeconds() + "s");
         if (pop.getFittest().isPresent()){
 
             double gene_fitness = pop.getFittest().get().getFitness();
-            logger.info("Fittest: " + pop.getFittest().get().hexHash() + " with " + gene_fitness  + " (+/- " + Math.abs(gene_fitness-initialFitness)+")");
+            logger.info(String.format("Fittest: %s with %.4f (+/- %.4f)",
+                    pop.getFittest().get().hexHash(),gene_fitness,Math.abs(gene_fitness-initialFitness)) );
 
             logger.debug("Fittest Gene: " + pop.getFittest().toString());
         } else {
@@ -229,8 +230,7 @@ public class Main {
                     " elements with " + pop.getAverageSize() + " average transformations");
         }
 
-        logger.debug("Population of generation " + generation + " = " + pop.toString());
-
+        logger.trace("Population of generation " + generation + " = " + pop.toString());
     }
 
 
@@ -243,12 +243,12 @@ public class Main {
         long code2vecTime = genotypeSupport.getTotalCode2vevTime();
         int code2vecSec = (int) (code2vecTime % 60);
         int code2vecMin = (int) ((code2vecTime / 60) % 60);
-        logger.info("Total time spent on Code2Vec inference was " + code2vecMin + " minutes and " + code2vecSec + " seconds." + "\n");
+        logger.info("Total time spent on Code2Vec was " + code2vecMin + " minutes and " + code2vecSec + " seconds." + "\n");
 
         long transitionTime = genotypeSupport.getTotalTransformationTime();
         int transitionSec = (int) (transitionTime % 60);
         int transitionMin = (int) ((transitionTime / 60) % 60);
-        logger.info("Total time spent on Transformation operations was " + transitionMin + " minutes and " + transitionSec + " seconds." + "\n");
+        logger.info("Total time spent on Transformation was " + transitionMin + " minutes and " + transitionSec + " seconds." + "\n");
     }
 
     /**

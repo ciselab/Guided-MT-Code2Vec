@@ -188,7 +188,7 @@ public class GenotypeSupport {
      * @return the path to the directory containing the copied result-files
      */
     public String runCode2vec(String dataset, String destination) {
-        logger.info("Starting code2vec inference");
+        logger.debug("Starting code2vec inference");
         logger.debug("Dataset " + dataset + " -> " + destination);
         long start = System.currentTimeMillis();
         Path path = Path.of(dataset);
