@@ -100,7 +100,6 @@ public class Main {
 
         // Create an initial population
         try {
-            FileWriter resultWriter = new FileWriter(logDir + "results.txt");
             MetamorphicPopulation myPop =
                     new MetamorphicPopulation(genotypeSupport, 0);
             for (int i = 0; i < config.genetic.getPopSize(); i++) {
@@ -110,7 +109,7 @@ public class Main {
             }
             MetamorphicIndividual initial = new MetamorphicIndividual(genotypeSupport, -1);
             initial.setJavaPath(Path.of(config.program.getDataDirectoryPath().toString(), genotypeSupport.getInitialDataset()).toString());
-            double initialFitness = writeInitialPopulationResults(resultWriter, myPop, initial);
+            double initialFitness = initial.getFitness();
 
             ArrayList<Double> fitnesses = new ArrayList<>();
 
@@ -124,9 +123,7 @@ public class Main {
                 }
 
                 generationCount++;
-                logger.info("Generation " + generationCount);
-                resultWriter.write("Generation " + generationCount + " has an average population size" +
-                        " of " + myPop.getAverageSize() + "\n");
+                logger.info("Starting Generation " + generationCount);
 
                 algorithm.checkPareto(myPop);
                 // Write all current individuals to their respective json files
@@ -138,8 +135,6 @@ public class Main {
                 LocalTime generationFinished = LocalTime.now();
 
                 logGenerationInfo(myPop,generationCount,initialFitness,generationStart,generationFinished);
-                resultWriter.write("Population of generation " + generationCount + " = " + myPop +
-                        "\n");
             }
             if (myPop.getAverageSize() >= config.genetic.getMaxGeneLength())
                 logger.info("Terminated because max gene size reached.");
@@ -147,18 +142,9 @@ public class Main {
                 logger.info("Terminated because total minutes reached max.");
 
             logger.info("Program finished");
-            // Report best, worst, average median
-            resultWriter.write("At the end of the algorithm the results are: , best: " + getBestForLog(fitnesses) + ", worst: " + getWorstForLog(fitnesses) + ", " +
-                    "average: " + getAverageForLog(fitnesses) + ", " + "median: " + getMedianForLog(fitnesses) + "\n");
-
-
             algorithm.checkPareto(myPop);
-            writeResultsAfterAlgorithm(resultWriter);
-            resultWriter.close();
-            /*
-            logger.info("Clean up other files.");
-            FileManagement.removeOtherDirs(FileManagement.dataDir);
-            */
+            logResultsAfterSearch();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -177,26 +163,22 @@ public class Main {
 
         // Create an initial population
         try {
-            FileWriter resultWriter = new FileWriter(logDir + "GA_results.txt");
             MetamorphicPopulation myPop =
                     new MetamorphicPopulation(genotypeSupport, 0);
             myPop.initialize(config.genetic.getPopSize(),(int) config.genetic.getGrowthFactor(),random);
             MetamorphicIndividual best = new MetamorphicIndividual(genotypeSupport, -1);
             best.setJavaPath(Path.of(config.program.getDataDirectoryPath().toString(), genotypeSupport.getInitialDataset()).toString());
-            double bestFitness = writeInitialPopulationResults(resultWriter, myPop, best);
-
+            double bestFitness = best.getFitness();
+            logger.info("Initial (best) fitness without transformations: " + bestFitness);
             double initialFitness = bestFitness;
+
             // Evolve our population until we reach an optimum solution
             int generationCount = 0;
             int steadyGens = 0;
-            int averageSizeSum = 0;
             while (!converged && timeDiffSmaller(start)) {
                 LocalTime generationStart = LocalTime.now();
                 generationCount++;
                 logger.info("Starting Generation " + generationCount);
-                resultWriter.write("Generation " + generationCount + " has an average population size" +
-                        " of " + myPop.getAverageSize() + "\n");
-                averageSizeSum += myPop.getAverageSize();
                 if (isFitter(myPop, bestFitness)) {
                     bestFitness = myPop.getFittest().get().getFitness();
                     best = myPop.getFittest().get();
@@ -219,29 +201,15 @@ public class Main {
                 var generationFinished = LocalTime.now();
                 logGenerationInfo(myPop,generationCount,initialFitness,generationStart,generationFinished);
 
-                resultWriter.write("Population of generation " + generationCount + " = " + myPop +
-                        "\n");
             }
             logger.info("Program finished");
             if (converged)
                 logger.info("Terminated because too many steady generations.");
             else
-                logger.info("Terminated because total minutes increased max.");
-            resultWriter.write("Generation used: " + generationCount + "\n");
-            resultWriter.write("Max fitness: " + best.getFitness() + "\n");
-            resultWriter.write("Best individual: " + "\n");
-            resultWriter.write(best + "\n");
+                logger.info("Terminated because total minutes surpassed max.");
 
             geneticAlgorithm.checkPareto(myPop);
-            writeResultsAfterAlgorithm(resultWriter);
-
-            resultWriter.write("Average population size over entire run was " + averageSizeSum / generationCount);
-
-            resultWriter.close();
-            /*
-            logger.info("Clean up other files.");
-            FileManagement.removeOtherDirs(FileManagement.dataDir);
-            */
+            logResultsAfterSearch();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -265,46 +233,22 @@ public class Main {
 
     }
 
-    /**
-     * Write everything we need to know about the initial population and the initial individual in it.
-     *
-     * @param resultWriter The file writer with which we can write the results.
-     * @param myPop        the current metamorphic population.
-     * @param best         the best individual of this population.
-     * @return the fitness of the best individual.
-     * @throws IOException exception when the program can't access the file.
-     */
-    private static double writeInitialPopulationResults(FileWriter resultWriter, MetamorphicPopulation myPop, MetamorphicIndividual best) throws IOException {
-        double bestFitness = best.getFitness();
-        logger.debug("Initial population: " + myPop);
-        resultWriter.write("Initial population: " + myPop + "\n");
-        logger.info("Initial fitness without transformations: " + bestFitness);
-        resultWriter.write("Initial fitness without transformations: " + bestFitness + "\n");
-
-        // check best against pareto
-        paretoFront.addToParetoOptimum(best);
-        return bestFitness;
-    }
 
     /**
-     * Write results after algorithm is finished to the correct file.
+     * Log some meta-results from times taken.
      *
-     * @param resultWriter The file writer with which we can write the results.
      * @throws IOException exception when the program can't access the file.
      */
-    private static void writeResultsAfterAlgorithm(FileWriter resultWriter) throws IOException {
-        resultWriter.write("Metrics are: " + Arrays.toString(cache.getMetrics().toArray()) + "\n");
-        resultWriter.write("Pareto set: " + paretoFront.displayPareto() + "\n");
-
+    private static void logResultsAfterSearch() throws IOException {
         long code2vecTime = genotypeSupport.getTotalCode2vevTime();
         int code2vecSec = (int) (code2vecTime % 60);
         int code2vecMin = (int) ((code2vecTime / 60) % 60);
-        resultWriter.write("Total time spent on Code2Vec inference was " + code2vecMin + " minutes and " + code2vecSec + " seconds." + "\n");
+        logger.info("Total time spent on Code2Vec inference was " + code2vecMin + " minutes and " + code2vecSec + " seconds." + "\n");
 
         long transitionTime = genotypeSupport.getTotalTransformationTime();
         int transitionSec = (int) (transitionTime % 60);
         int transitionMin = (int) ((transitionTime / 60) % 60);
-        resultWriter.write("Total time spent on Transformation operations was " + transitionMin + " minutes and " + transitionSec + " seconds." + "\n");
+        logger.info("Total time spent on Transformation operations was " + transitionMin + " minutes and " + transitionSec + " seconds." + "\n");
     }
 
     /**
@@ -335,79 +279,6 @@ public class Main {
     public static boolean timeDiffSmaller(LocalTime start) {
         long minutesBetween = Duration.between(start, LocalTime.now()).getSeconds() / 60;
         return minutesBetween < config.program.getMaxTimeInMin();
-    }
-
-
-    /**
-     * Get median of list of doubles.
-     *
-     * @param values the list of double values.
-     * @return the median of the list.
-     */
-    public static double getMedianForLog(ArrayList<Double> values) {
-        if (values.isEmpty())
-            return 0.0;
-
-        Collections.sort(values);
-        if (values.size() % 2 == 1)
-            return values.get((values.size() + 1) / 2 - 1);
-        else {
-            double lower = values.get(values.size() / 2 - 1);
-            double upper = values.get(values.size() / 2);
-
-            return (lower + upper) / 2.0;
-        }
-    }
-
-    /**
-     * Get average of list of doubles.
-     *
-     * @param values the list of double values.
-     * @return the average of the list.
-     */
-    public static double getAverageForLog(ArrayList<Double> values) {
-        if (values.isEmpty())
-            return 0.0;
-
-        double sum = 0;
-        for (double i : values) {
-            sum += i;
-        }
-        return sum / values.size();
-    }
-
-    /**
-     * Get worst value of list.
-     *
-     * @param values the list.
-     * @return the worst value.
-     */
-    public static double getWorstForLog(ArrayList<Double> values) {
-        if (values.isEmpty())
-            return 0.0;
-
-        Collections.sort(values);
-        if (cache.doMaximize())
-            return values.get(0);
-        else
-            return values.get(values.size() - 1);
-    }
-
-    /**
-     * Get best value of list.
-     *
-     * @param values the list.
-     * @return the best value.
-     */
-    public static double getBestForLog(ArrayList<Double> values) {
-        if (values.isEmpty())
-            return 0.0;
-
-        Collections.sort(values);
-        if (cache.doMaximize())
-            return values.get(values.size() - 1);
-        else
-            return values.get(0);
     }
 
     /**
