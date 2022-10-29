@@ -52,10 +52,7 @@ def make_df(path_to_data_dir: str) -> pd.DataFrame:
             datapoint["experiment"] = extract_experiment_from_path(path_to_data_dir, file)
             datapoint["TRANSFORMATIONS"] = count_transformers(datapoint)
             datapoint["generation"] = extract_generation_from_path(file)
-<<<<<<< HEAD
             datapoint["algorithm"] = extract_algorithm_from_experiment_name(datapoint["experiment"])
-=======
->>>>>>> 5bd83ca2d05ca668b18a7b67d2a0ffd340fa9f91
             transformers = extract_transformers_from_genotype(datapoint["genotype"], known_transformers)
             datapoint = {**datapoint, **transformers}
             del transformers
@@ -99,14 +96,11 @@ def count_transformers(datapoint):
     else:
         return len(raw)
 
-<<<<<<< HEAD
 def extract_algorithm_from_experiment_name(exp_name:str)->str:
     if "random" in exp_name:
         return "random"
     else:
         return "genetic"
-=======
->>>>>>> 5bd83ca2d05ca668b18a7b67d2a0ffd340fa9f91
 
 def extract_transformers_from_genotype(genotype, transformers: [str] = known_transformers) -> dict:
     if type(genotype) == str:
