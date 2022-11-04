@@ -11,8 +11,10 @@ known_transformers = [
     "IfTrueTransformer", "RandomParameterNameTransformer"
 ]
 
+
 def get_known_transformers() -> [str]:
     return known_transformers
+
 
 def make_csv(path_to_data_dir: str, filename: str = "results.csv") -> None:
     """
@@ -96,11 +98,13 @@ def count_transformers(datapoint):
     else:
         return len(raw)
 
+
 def extract_algorithm_from_experiment_name(exp_name:str)->str:
     if "random" in exp_name:
         return "random"
     else:
         return "genetic"
+
 
 def extract_transformers_from_genotype(genotype, transformers: [str] = known_transformers) -> dict:
     if type(genotype) == str:
