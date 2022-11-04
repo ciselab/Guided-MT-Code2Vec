@@ -42,7 +42,7 @@ apply_statistical_analysis <- function(dataset, experiment.random, experiment.ge
   table.results <- rbindlist(table.results, fill = T)
   
   #sort the rows in ascending order of n. generations
-  table.results <- table.results[order(generation),]
+  table.results <- table.results[o1rder(generation),]
   return(table.results)
 }
 
