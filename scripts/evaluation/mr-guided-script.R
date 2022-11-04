@@ -46,8 +46,8 @@ apply_statistical_analysis <- function(dataset, experiment.random, experiment.ge
   return(table.results)
 }
 
-results.f1 <- apply_statistical_analysis(data.points, "random-F1-max", "F1-max")
+results.f1 <- apply_statistical_analysis(data.points, "random-F1-min", "F1-min")
 print(results.f1)
 
-results.mrr <- apply_statistical_analysis(data.points, "random-MRR-max", "MRR-max")
+results.mrr <- apply_statistical_analysis(data.points, "random-MRR-min", "MRR-min")
 print(results.mrr)
