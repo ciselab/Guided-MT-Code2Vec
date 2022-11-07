@@ -2,6 +2,7 @@ if (!require(effsize)){ install.packages("effsize") }
 if (!require(data.table)){ install.packages("data.table") }
 if (!require(ggplot2)){ install.packages("ggplot2") }
 if (!require(epitools)){ install.packages("epitools") }
+if (!require(xtable)){install.packages("xtable")}
 
 # To run the script, un-comment the next line and specify the correct path/folder 
 # where the CSV file (with all the results) is stored
@@ -48,6 +49,9 @@ apply_statistical_analysis <- function(dataset, experiment.random, experiment.ge
 
 results.f1 <- apply_statistical_analysis(data.points, "random-F1-min", "F1-min")
 print(results.f1)
+print(xtable(results.f1, type = "latex"), file = "f1-stats.tex")
+
 
 results.mrr <- apply_statistical_analysis(data.points, "random-MRR-min", "MRR-min")
 print(results.mrr)
+print(xtable(results.mrr, type = "latex"), file = "mrr-stats.tex")
