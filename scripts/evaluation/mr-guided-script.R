@@ -3,6 +3,7 @@ if (!require(data.table)){ install.packages("data.table") }
 if (!require(ggplot2)){ install.packages("ggplot2") }
 if (!require(epitools)){ install.packages("epitools") }
 if (!require(xtable)){install.packages("xtable")}
+if (!require(dplyr)){install.packages("dplyr")}
 
 # To run the script, un-comment the next line and specify the correct path/folder 
 # where the CSV file (with all the results) is stored
@@ -31,12 +32,14 @@ apply_statistical_analysis <- function(dataset, experiment.random, experiment.ge
         random.f1 = median(random$F1),
         genetic.f1 = median(genetic$F1),
         wilcoxon.f1 = wilcox.test(random$F1, genetic$F1, alternative = "two.sided")$p.value,
-        a12.f1 = paste(vd.f1$estimate, " (", vd.f1$magnitude, ")", sep=""),
+        a12.f1 = vd.f1$estimate,
+        a12.f1_mag = vd.f1$magnitude,
         random.mrr = median(random$MRR),
         genetic.mrr = median(genetic$MRR),
         wilcoxon.mrr = wilcox.test(random$MRR, genetic$MRR, alternative = "two.sided")$p.value,
-        a12.mrr = paste(vd.mrr$estimate, " (", vd.mrr$magnitude, ")", sep="")
-      ) 
+        a12.mrr = vd.mrr$estimate,
+        a12.mrr_mag=vd.mrr$magnitude
+      )
       count <- count + 1
     }
   }
@@ -48,10 +51,14 @@ apply_statistical_analysis <- function(dataset, experiment.random, experiment.ge
 }
 
 results.f1 <- apply_statistical_analysis(data.points, "random-F1-min", "F1-min")
+results.f1 <- results.f1 %>% mutate_if(is.numeric, round, digits=4)
+
 print(results.f1)
 print(xtable(results.f1, type = "latex"), file = "f1-stats.tex")
 
 
 results.mrr <- apply_statistical_analysis(data.points, "random-MRR-min", "MRR-min")
+results.mrr <- results.mrr %>% mutate_if(is.numeric, round, digits=4)
+
 print(results.mrr)
 print(xtable(results.mrr, type = "latex"), file = "mrr-stats.tex")
