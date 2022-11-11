@@ -5,6 +5,17 @@ import regex as re
 import pandas as pd
 
 
+known_transformers = [
+    "RenameVariableTransformer", "IfFalseElseTransformer", "AddNeutralElementTransformer",
+    "AddUnusedVariableTransformer", "LambdaIdentityTransformer",
+    "IfTrueTransformer", "RandomParameterNameTransformer"
+]
+
+
+def get_known_transformers() -> [str]:
+    return known_transformers
+
+
 def make_csv(path_to_data_dir: str, filename: str = "results.csv") -> None:
     """
     Extracts all data from the given dirs jsonfiles,
@@ -43,10 +54,18 @@ def make_df(path_to_data_dir: str) -> pd.DataFrame:
             datapoint["experiment"] = extract_experiment_from_path(path_to_data_dir, file)
             datapoint["TRANSFORMATIONS"] = count_transformers(datapoint)
             datapoint["generation"] = extract_generation_from_path(file)
+            datapoint["algorithm"] = extract_algorithm_from_experiment_name(datapoint["experiment"])
+            transformers = extract_transformers_from_genotype(datapoint["genotype"], known_transformers)
+            datapoint = {**datapoint, **transformers}
+            del transformers
 
             datapoints.append(datapoint)
 
     df = pd.DataFrame(datapoints)
+    # Change some Datatypes
+    df["algorithm"] = df.algorithm.astype("category")
+    df['experiment'] = df.experiment.astype('category')
+    df['seed'] = df.seed.astype('category')
 
     return df
 
@@ -54,7 +73,7 @@ def make_df(path_to_data_dir: str) -> pd.DataFrame:
 def extract_seed_from_path(path: str) -> int:
     pattern = r'seed-\d+'
     match = re.findall(pattern, path)[0]
-    return match[5:]
+    return int(match[5:])
 
 
 def extract_experiment_from_path(directory: str, path: str) -> str:
@@ -66,15 +85,83 @@ def extract_experiment_from_path(directory: str, path: str) -> str:
 def extract_generation_from_path(path: str) -> int:
     pattern = r'gen\d+'
     match = re.findall(pattern, path)[0]
-    return match[3:]
+    return int(match[3:])
 
 
 def count_transformers(datapoint):
     # There was an issue with the json, the genotype is just a string as some quotes were missing
     raw = datapoint["genotype"]
-    pattern = "transformer"
-    matches = re.findall(pattern, raw)
-    return len(matches)
+    if type(raw) == str:
+        pattern = "transformer"
+        matches = re.findall(pattern, raw)
+        return len(matches)
+    else:
+        return len(raw)
+
+
+def extract_algorithm_from_experiment_name(exp_name:str)->str:
+    if "random" in exp_name:
+        return "random"
+    else:
+        return "genetic"
+
+
+def extract_transformers_from_genotype(genotype, transformers: [str] = known_transformers) -> dict:
+    if type(genotype) == str:
+        return extract_transformers_from_str(genotype,transformers)
+    else:
+        return extract_genotype_from_json(genotype,transformers)
+
+
+def extract_transformers_from_str(genotype:str, transformers: [str] = known_transformers) -> dict:
+    """
+    Tries to count the given Transformers in the given Genotype-Str.
+    Result is a dictionary with the count of each Transformer.
+
+    >>> example_genotype = "[{ transformer: RenameVariableTransformer, seed: 1131100509 }{ transformer: AddNeutralElementTransformer, seed: -1887344816 }{ transformer: IfFalseElseTransformer, seed: -1554943859 }{ transformer: LambdaIdentityTransformer, seed: 2097957312 }{ transformer: AddUnusedVariableTransformer, seed: 2076014978 }]"
+    >>> transformers = [ "RenameVariableTransformer","IfFalseElseTransformer","AddNeutralElementTransformer","AddUnusedVariableTransformer","LambdaIdentityTransformer","IfTrueTransformer", "RandomParameterNameTransformer"]
+    >>> extract_transformers_from_str(example_genotype,transformers))
+    {'RenameVariableTransformer': 1,
+     'IfFalseElseTransformer': 1,
+     'AddNeutralElementTransformer': 1,
+     'AddUnusedVariableTransformer': 1,
+     'LambdaIdentityTransformer': 1,
+     'IfTrueTransformer': 0,
+     'RandomParameterNameTransformer': 0}
+    """
+    results = {}
+    for trans in transformers:
+        pattern = trans
+        results[trans] = len(re.findall(pattern, genotype))
+    return results
+
+
+def extract_genotype_from_json(genotype: [dict], transformers: [str] = known_transformers) -> dict:
+    """
+    Tries to count the given Transformers in the given Genotype-Str.
+    Result is a dictionary with the count of each Transformer.
+
+    :param genotype: the transformers of one datapoint, a list of transformer+seed objects
+    :param transformers: a list of all available transformers to check for
+    :return: a dictionary with each transformers count
+
+    >>> example_genotype_json = [{"transformer": "RenameVariableTransformer", "seed": 1131100509 },{ "transformer": "AddNeutralElementTransformer", "seed": -1887344816 },{"transformer": "IfFalseElseTransformer", "seed": -1554943859 },{"transformer": "LambdaIdentityTransformer", "seed": 2097957312 },{"transformer": "AddUnusedVariableTransformer", "seed": 2076014978}]
+    >>> transformers = [ "RenameVariableTransformer","IfFalseElseTransformer","AddNeutralElementTransformer","AddUnusedVariableTransformer","LambdaIdentityTransformer","IfTrueTransformer", "RandomParameterNameTransformer"]
+    >>> extract_genotype_from_json(example_genotype_json,transformers=transformers)
+    {'RenameVariableTransformer': 1,
+     'IfFalseElseTransformer': 1,
+     'AddNeutralElementTransformer': 1,
+     'AddUnusedVariableTransformer': 1,
+     'LambdaIdentityTransformer': 1,
+     'IfTrueTransformer': 0,
+     'RandomParameterNameTransformer': 0}
+
+    """
+    result = {}
+    found_trans = [g["transformer"] for g in genotype]
+    for trans in transformers:
+        result[trans]=found_trans.count(trans)
+    return result
 
 
 if __name__ == "__main__":
